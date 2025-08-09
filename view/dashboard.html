@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Honeypot Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Honeypot Dashboard</h1>
+
+  <button onclick="triggerSimulation()">Run Simulation</button>
+
+  <div id="result" style="margin-top: 20px;"></div>
+
+  <script>
+    async function triggerSimulation() {
+      const response = await fetch('/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trap_type: 'ssh',
+          input: 'whoami',
+          ip: '192.168.1.5'
+        })
+      });
+      const data = await response.json();
+      document.getElementById('result').innerText = JSON.stringify(data);
+    }
+  </script>
+</body>
+</html>
