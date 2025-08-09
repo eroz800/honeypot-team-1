@@ -1,0 +1,46 @@
+2025-08-09 18:29:54,937 INFO concurrency model: async
+2025-08-09 18:29:54,937 INFO masquerade (NAT) address: None
+2025-08-09 18:29:54,937 INFO passive ports: None
+2025-08-09 18:29:54,937 INFO >>> starting FTP server on 0.0.0.0:2121, pid=4244 <<<
+2025-08-09 18:36:17,963 INFO 127.0.0.1:63367-[] FTP session opened (connect)
+2025-08-09 18:36:17,963 INFO Connection from 127.0.0.1:63367
+2025-08-09 18:36:33,794 INFO 127.0.0.1:63367-[user] USER 'user' logged in.
+2025-08-09 18:36:33,794 INFO Login: user from 127.0.0.1
+2025-08-09 18:41:02,420 INFO 127.0.0.1:63367-[user] FTP session closed (disconnect).
+2025-08-09 18:41:02,421 INFO Disconnected 127.0.0.1:63367
+2025-08-09 18:41:22,703 INFO 127.0.0.1:63420-[] FTP session opened (connect)
+2025-08-09 18:41:22,704 INFO Connection from 127.0.0.1:63420
+2025-08-09 18:41:34,374 INFO 127.0.0.1:63420-[] USER 'user' failed login.
+2025-08-09 18:41:34,375 WARNING Failed login: user from 127.0.0.1
+2025-08-09 18:41:53,519 INFO 127.0.0.1:63420-[] FTP session closed (disconnect).
+2025-08-09 18:41:53,520 INFO Disconnected 127.0.0.1:63420
+2025-08-09 18:42:05,450 INFO 127.0.0.1:63423-[] FTP session opened (connect)
+2025-08-09 18:42:05,450 INFO Connection from 127.0.0.1:63423
+2025-08-09 18:42:12,289 INFO 127.0.0.1:63423-[user] USER 'user' logged in.
+2025-08-09 18:42:12,290 INFO Login: user from 127.0.0.1
+2025-08-09 18:47:15,207 INFO 127.0.0.1:63423-[user] Control connection timed out.
+2025-08-09 18:47:15,208 INFO 127.0.0.1:63423-[user] FTP session closed (disconnect).
+2025-08-09 18:47:15,208 INFO Disconnected 127.0.0.1:63423
+2025-08-09 18:56:39,408 INFO concurrency model: async
+2025-08-09 18:56:39,409 INFO masquerade (NAT) address: None
+2025-08-09 18:56:39,409 INFO passive ports: None
+2025-08-09 18:56:39,409 INFO >>> starting FTP server on 0.0.0.0:2121, pid=6112 <<<
+2025-08-09 18:57:11,752 INFO 127.0.0.1:63575-[] FTP session opened (connect)
+2025-08-09 18:57:11,754 INFO Connection from 127.0.0.1:63575
+2025-08-09 18:57:19,412 INFO 127.0.0.1:63575-[user] USER 'user' logged in.
+2025-08-09 18:57:19,413 INFO Login: user from 127.0.0.1
+2025-08-09 19:02:21,297 INFO 127.0.0.1:63575-[user] Control connection timed out.
+2025-08-09 19:02:21,297 INFO 127.0.0.1:63575-[user] FTP session closed (disconnect).
+2025-08-09 19:02:21,297 INFO Disconnected 127.0.0.1:63575
+2025-08-09 19:12:37,618 INFO 127.0.0.1:63755-[] FTP session opened (connect)
+2025-08-09 19:12:37,618 INFO Connection from 127.0.0.1:63755
+2025-08-09 19:12:41,891 INFO 127.0.0.1:63755-[user] USER 'user' logged in.
+2025-08-09 19:12:41,891 INFO Login: user from 127.0.0.1
+2025-08-09 19:12:50,023 INFO 127.0.0.1:63755-[user] FTP session closed (disconnect).
+2025-08-09 19:12:50,024 INFO Disconnected 127.0.0.1:63755
+2025-08-09 19:14:12,210 INFO 127.0.0.1:63777-[] FTP session opened (connect)
+2025-08-09 19:14:12,210 INFO Connection from 127.0.0.1:63777
+2025-08-09 19:14:16,487 INFO 127.0.0.1:63777-[user] USER 'user' logged in.
+2025-08-09 19:14:16,488 INFO Login: user from 127.0.0.1
+2025-08-09 19:14:52,411 INFO 127.0.0.1:63777-[user] FTP session closed (disconnect).
+2025-08-09 19:14:52,411 INFO Disconnected 127.0.0.1:63777
