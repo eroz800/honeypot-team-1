@@ -1,0 +1,7 @@
+2025-08-11T12:49:35.408914Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/api/health | status=200 | body=""
+2025-08-11T12:50:22.125798Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/ | status=200 | body=""
+2025-08-11T12:50:38.901811Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/api/health | status=200 | body=""
+2025-08-11T12:50:51.736089Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=POST | path=/login | status=200 | body="user=admin&pass=123456"
+2025-08-11T13:20:36.816943Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/ | status=200 | body=""
+2025-08-11T13:20:42.597122Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/api/health | status=200 | body=""
+2025-08-11T13:21:50.147349Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=POST | path=/login\nuser=admin&pass=123 | status=404 | body=""
