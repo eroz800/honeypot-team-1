@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+import time
 from typing import Dict
 from .trap import Trap
 
@@ -47,6 +48,19 @@ class HTTPTrap(Trap):
 
         # אופציונלי לשימוש פנימי/בדיקות
         self._last_response = {"status": status, "body": response_body}
+        return {
+    "trap_type": self.get_type(),
+    "protocol": self.get_protocol(),
+    "ip": ip,
+    "input": input_data,
+    "timestamp": int(time.time()),
+    "data": {
+        "status": status,
+        "body": response_body,
+        "content_type": "application/json" if path.startswith("/api/") else "text/html"
+    }
+}
+
 
     # --- עזר ---
     def _parse_request(self, raw: str) -> tuple[str, str, str]:

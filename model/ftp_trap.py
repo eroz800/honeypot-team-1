@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
+import time
 from .trap import Trap
 
 class FTPTrap(Trap):
@@ -30,7 +31,17 @@ class FTPTrap(Trap):
         else:
             response = "502 Command not implemented."
 
-        return {"status": "ok", "response": response}
+        return {
+    "trap_type": self.get_type(),
+    "protocol": self.get_protocol(),
+    "ip": ip,
+    "input": input_data,
+    "timestamp": int(time.time()),
+    "data": {
+        "status": "ok",
+        "response": response
+    }
+}
 
     # --- עזר לשמירת לוגים ---
     def _format_log(self, command: str, ip: str) -> str:
