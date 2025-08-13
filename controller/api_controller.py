@@ -1,13 +1,18 @@
 # controller/api_controller.py
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parents[1]
 
-from flask import Flask, request, jsonify, send_from_directory, render_template_string, make_response
+from flask import Flask, request, jsonify, send_from_directory, render_template_string, make_response, send_file
 from model.trap_manager import TrapManager
 try:
     from model.logger import log_interaction  # אם קיים – נשתמש; אם לא, נתעלם בשקט
 except Exception:
     log_interaction = None
+
+# ייבוא הפונקציה שמייצרת את הדוח ומחזירה נתיב מוחלט
+from model.report_generator import generate_report
 
 app = Flask(__name__)
 manager = TrapManager()
@@ -21,16 +26,33 @@ def home():
 # ---------- Dashboard / Static ----------
 @app.route("/dashboard")
 def dashboard():
-    with open("view/dashboard.html", "r", encoding="utf-8") as f:
+    with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
         return render_template_string(f.read())
+
+@app.route("/report")
+def show_report():
+    """
+    מייצר את הדוח בכל בקשה ומגיש את הקובץ המלא ישירות לדפדפן.
+    זה עוקף בעיות נתיב/סביבת ריצה כי משתמשים בנתיב המוחלט שהפונקציה מחזירה.
+    """
+    try:
+        out_path = generate_report()  # Path אובייקט מוחלט ל-reports/summary.html
+        return send_file(str(out_path), mimetype="text/html")
+    except FileNotFoundError:
+        return "<h1>אין דוח זמין</h1><p>לא נמצאו קבצי לוג ליצירת דוח.</p>", 404
+    except Exception as e:
+        return f"<h1>שגיאה ביצירת הדוח</h1><pre>{e}</pre>", 500
 
 @app.route("/style.css")
 def style():
-    return send_from_directory("view", "style.css")
+    return send_from_directory(str(BASE_DIR / "view"), "style.css")
 
+
+# (לא חובה יותר, אבל משאיר כנתיב ידני במידה וצריך)
 @app.route("/summary")
 def summary():
-    with open("reports/summary.html", "r", encoding="utf-8") as f:
+    out_path = generate_report()
+    with out_path.open("r", encoding="utf-8") as f:
         return render_template_string(f.read())
 
 
