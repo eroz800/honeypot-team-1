@@ -1,5 +1,5 @@
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 import time
 from .trap import Trap
@@ -45,7 +45,7 @@ class FTPTrap(Trap):
 
     # --- עזר לשמירת לוגים ---
     def _format_log(self, command: str, ip: str) -> str:
-        ts = datetime.utcnow().isoformat() + "Z"
+        ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         command_preview = command.replace("\n", "\\n")[:200]
         return (f'{ts} | protocol=FTP | type=ftp | ip={ip} | '
                 f'command="{command_preview}"\n')

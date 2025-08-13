@@ -1,7 +1,7 @@
 # model/http_trap.py
 from __future__ import annotations
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 import time
 from typing import Dict
@@ -80,7 +80,7 @@ class HTTPTrap(Trap):
         return method, path, body
 
     def _format_log(self, method: str, path: str, status: int, ip: str, body: str) -> str:
-        ts = datetime.utcnow().isoformat() + "Z"
+        ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         body_preview = body.replace("\n", "\\n")[:200]
         return (f'{ts} | protocol=HTTP | type=http | ip={ip} | '
                 f'method={method} | path={path} | status={status} | body="{body_preview}"\n')

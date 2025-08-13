@@ -13,3 +13,12 @@
 [2025-08-12 20:06:21] ssh from 192.168.1.5: whoami
 [2025-08-12 20:07:12] http from 192.168.1.5: GET /
 [2025-08-12 20:07:59] ftp from 192.168.1.5: LIST
+[2025-08-13 17:40:02] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:40:22] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:43:22] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:45:23] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:54:21] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:56:57] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 17:58:05] Fake SSH Login from 192.168.0.42: whoami
+[2025-08-13 18:11:49] http from 127.0.0.1: GET /
+[2025-08-13 18:45:13] http from 127.0.0.1: GET /

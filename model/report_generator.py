@@ -1,23 +1,29 @@
-
-
-# model/report_generator.py
+from pathlib import Path
 
 def generate_report():
-    try:
-        with open("logs/honeypot.log", "r", encoding="utf-8") as f:
-            log_lines = f.readlines()
-    except FileNotFoundError:
-        print("לא נמצא קובץ לוג. אין מה לסכם.")
-        return
+    # מחשב את נתיב התיקייה הראשית של הפרויקט
+    base_dir = Path(__file__).resolve().parents[1]
+    log_path = base_dir / "logs" / "honeypot.log"
 
+    # בדיקה אם קובץ הלוג קיים
+    if not log_path.exists():
+        print("לא נמצא קובץ לוג. אין מה לסכם.")
+        raise FileNotFoundError
+
+    # קריאת הלוג
+    with log_path.open("r", encoding="utf-8") as f:
+        log_lines = f.readlines()
+
+    # יצירת שורות HTML
     html_lines = [
-        "<html>",
-        "<head><title>Honeypot Report</title></head>",
-        "<body>",
-        "<h1>Honeypot Activity Summary</h1>",
-        "<table border='1'>",
-        "<tr><th>Timestamp</th><th>Trap Type</th><th>IP</th><th>Input</th></tr>"
-    ]
+    "<html>",
+    "<head><title>Honeypot Report</title><link rel='stylesheet' href='/style.css'></head>",
+    "<body>",
+    "<h1>Honeypot Activity Summary</h1>",
+    "<table class='report-table'>",
+    "<tr><th>Timestamp</th><th>Trap Type</th><th>IP</th><th>Input</th></tr>"
+]
+
 
     for line in log_lines:
         try:
@@ -29,14 +35,17 @@ def generate_report():
                 f"<tr><td>{timestamp}</td><td>{trap_type}</td><td>{ip}</td><td>{input_data}</td></tr>"
             )
         except ValueError:
-            continue  # מדלג על שורות לא תקינות
+            continue  # דילוג על שורות לא תקינות
 
     html_lines.extend(["</table>", "</body>", "</html>"])
 
-    import os
-    os.makedirs("reports", exist_ok=True)
+    reports_dir = base_dir / "reports"
+    reports_dir.mkdir(exist_ok=True)
 
-    with open("reports/summary.html", "w", encoding="utf-8") as f:
+    out_path = reports_dir / "summary.html"
+    with out_path.open("w", encoding="utf-8") as f:
         f.write("\n".join(html_lines))
 
-    print("  The report was generated successfully in reports/summary.html")
+    print(f"The report was generated successfully in {out_path}")
+    return out_path  # מחזיר נתיב מלא לקובץ
+

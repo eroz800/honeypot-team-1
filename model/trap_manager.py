@@ -20,6 +20,14 @@ class TrapManager:
     def list_traps(self):
         return list(self._traps.keys())
 
+    def add_trap(self, trap_type: str, trap_obj):
+        if not hasattr(trap_obj, "simulate_interaction"):
+            raise TypeError("trap_obj must implement simulate_interaction")
+        self._traps[trap_type] = trap_obj
+
+
+    
+
     def run_trap(self, trap_type: str, input_data: Any, ip: str) -> dict:
         trap = self._traps.get(trap_type)
         if trap is None:

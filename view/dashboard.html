@@ -8,40 +8,46 @@
 <body>
   <h1>Honeypot Dashboard</h1>
 
-  <h2>Simulate Interaction</h2>
-  <form id="simulate-form">
-    <label>IP:
-      <input name="ip" id="ip" placeholder="1.2.3.4" required />
-    </label>
-    <label>Trap Type:
-      <select name="trap_type" id="trap_type" required>
-        <option value="ssh">ssh</option>
-        <option value="http">http</option>
-        <option value="ftp">ftp</option>
-      </select>
-    </label>
-    <label>Input JSON:
-      <textarea id="input_json" rows="4" placeholder='{"method":"GET","path":"/admin"}'></textarea>
-    </label>
-    <button type="submit">Run</button>
-  </form>
+  <section class="form-section">
+    <h2>Simulate Interaction</h2>
+    <form id="simulate-form">
+      <div class="form-group">
+        <label for="ip">IP:</label>
+        <input name="ip" id="ip" placeholder="1.2.3.4" required />
+      </div>
+      <div class="form-group">
+        <label for="trap_type">Trap Type:</label>
+        <select name="trap_type" id="trap_type" required>
+          <option value="ssh">ssh</option>
+          <option value="http">http</option>
+          <option value="ftp">ftp</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="input_json">Input JSON:</label>
+        <textarea id="input_json" rows="4" placeholder='{"method":"GET","path":"/admin"}'></textarea>
+      </div>
+      <button type="submit">Run</button>
+    </form>
+  </section>
 
-  <div id="result" style="margin-top: 20px;"></div>
+  <section class="result-section">
+    <h2>Result</h2>
+    <div id="result"></div>
+    <p style="text-align:right;margin:10px 0;">
+    <a href="/report" target="_blank">
+    <button type="button">Open Report</button>
+  </a>
+</p>
+
+  </section>
 
   <script>
     document.getElementById("simulate-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const ip = document.getElementById("ip").value.trim();
       const trap_type = document.getElementById("trap_type").value.trim();
-      const inputText = document.getElementById("input_json").value.trim();
-
-      let input;
-      try {
-        input = inputText ? JSON.parse(inputText) : {};
-      } catch (err) {
-        document.getElementById("result").textContent = "Invalid JSON in input field.";
-        return;
-      }
+      const input = document.getElementById("input_json").value.trim();
 
       const res = await fetch("/simulate", {
         method: "POST",

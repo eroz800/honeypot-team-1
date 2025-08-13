@@ -1,41 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Honeypot Activity Summary</title>
-  <style>
-    body { font-family: Arial; padding: 20px; background: #f8f8f8; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #eee; }
-  </style>
-</head>
+<html>
+<head><title>Honeypot Report</title><link rel='stylesheet' href='/style.css'></head>
 <body>
-  <h1>Honeypot Activity Summary</h1>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Timestamp</th>
-        <th>Trap Type</th>
-        <th>IP</th>
-        <th>Input</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>2025-08-04 15:11:54</td>
-        <td>Fake SSH Login</td>
-        <td>192.168.0.42</td>
-        <td>whoami</td>
-      </tr>
-      <tr>
-        <td>2025-08-04 15:12:31</td>
-        <td>Fake SSH Login</td>
-        <td>192.168.0.42</td>
-        <td>whoami</td>
-      </tr>
-    </tbody>
-  </table>
+<h1>Honeypot Activity Summary</h1>
+<table class='report-table'>
+<tr><th>Timestamp</th><th>Trap Type</th><th>IP</th><th>Input</th></tr>
+<tr><td>2025-08-04 15:11:54</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-04 15:12:31</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:29:14</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:29:57</td><td>http</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:30:01</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:30:12</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:30:13</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:30:13</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:48:09</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:53:09</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 19:55:48</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 20:01:56</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 20:06:21</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
+<tr><td>2025-08-12 20:07:12</td><td>http</td><td>192.168.1.5</td><td>GET /</td></tr>
+<tr><td>2025-08-12 20:07:59</td><td>ftp</td><td>192.168.1.5</td><td>LIST</td></tr>
+<tr><td>2025-08-13 17:40:02</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:40:22</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:43:22</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:45:23</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:54:21</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:56:57</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 17:58:05</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
+<tr><td>2025-08-13 18:11:49</td><td>http</td><td>127.0.0.1</td><td>GET /</td></tr>
+<tr><td>2025-08-13 18:45:13</td><td>http</td><td>127.0.0.1</td><td>GET /</td></tr>
+</table>
 </body>
 </html>
