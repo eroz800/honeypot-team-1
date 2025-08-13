@@ -48,7 +48,7 @@ def style():
     return send_from_directory(str(BASE_DIR / "view"), "style.css")
 
 
-# (לא חובה יותר, אבל משאיר כנתיב ידני במידה וצריך)
+
 @app.route("/summary")
 def summary():
     out_path = generate_report()
