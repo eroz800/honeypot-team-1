@@ -4,7 +4,7 @@ import time
 from .http_trap import HTTPTrap
 from .ftp_trap import FTPTrap
 from .ssh_trap import SshTrap
-
+from .admin_panel_trap import AdminPanelTrap
 
 class TrapManager:
     def __init__(self):
@@ -13,6 +13,7 @@ class TrapManager:
         self._traps["http"] = HTTPTrap()
         self._traps["ftp"]  = FTPTrap()
         self._traps["ssh"]  = SshTrap()
+        self._traps["admin_panel"] = AdminPanelTrap()
 
     def get_trap(self, name: str):
         return self._traps.get(name)

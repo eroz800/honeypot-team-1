@@ -22,3 +22,8 @@
 [2025-08-13 17:58:05] Fake SSH Login from 192.168.0.42: whoami
 [2025-08-13 18:11:49] http from 127.0.0.1: GET /
 [2025-08-13 18:45:13] http from 127.0.0.1: GET /
+[2025-08-17 21:36:18] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 21:36:56] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 21:36:57] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 21:41:03] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 21:41:09] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '122'}

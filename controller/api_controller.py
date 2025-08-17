@@ -54,7 +54,10 @@ def summary():
     out_path = generate_report()
     with out_path.open("r", encoding="utf-8") as f:
         return render_template_string(f.read())
-
+    
+@app.route("/admin_panel.html")
+def admin_panel():
+    return send_from_directory(str(BASE_DIR / "view"), "admin_panel.html")
 
 # ---------- Generic simulation endpoint ----------
 @app.route("/simulate", methods=["POST"])
