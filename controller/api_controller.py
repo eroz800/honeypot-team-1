@@ -64,7 +64,11 @@ def admin_panel():
 def simulate():
     data = request.get_json(silent=True) or {}
 
-    trap_type = (data.get("trap_type") or "").strip().lower()
+    trap_type_raw = data.get("trap_type")
+    if isinstance(trap_type_raw, str):
+        trap_type = trap_type_raw.strip().lower()
+    else:
+        trap_type = str(trap_type_raw).lower()
     input_data = data.get("input")  # יכול להיות dict (http/ftp) או str (ssh)
     ip = data.get("ip") or request.headers.get("X-Forwarded-For", request.remote_addr)
 

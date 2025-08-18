@@ -9,3 +9,7 @@
 2025-08-12T17:07:12.136730Z | protocol=HTTP | type=http | ip=192.168.1.5 | method=GET | path=/ | status=200 | body=""
 2025-08-13T15:11:49.708357Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/ | status=200 | body=""
 2025-08-13T15:45:13.698945Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/ | status=200 | body=""
+2025-08-18T07:46:35.628504Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
+2025-08-18T07:47:33.420572Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
+2025-08-18T07:48:13.646663Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
+2025-08-18T07:48:23.841281Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
