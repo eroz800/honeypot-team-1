@@ -27,3 +27,18 @@
 [2025-08-17 21:36:57] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
 [2025-08-17 21:41:03] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
 [2025-08-17 21:41:09] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '122'}
+[2025-08-17 22:37:09] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 22:37:36] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 22:37:36] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-18 10:32:50] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-18 10:33:15] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-18 10:34:19] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
+[2025-08-18 10:34:32] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
+[2025-08-18 10:34:43] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
+[2025-08-18 10:46:35] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-18 10:47:33] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-18 10:48:13] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-18 10:48:23] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}

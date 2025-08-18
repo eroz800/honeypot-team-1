@@ -12,3 +12,8 @@
 2025-08-12T16:30:13.000936Z | protocol=FTP | type=ftp | ip=192.168.1.5 | command="whoami"
 2025-08-12T16:30:13.248447Z | protocol=FTP | type=ftp | ip=192.168.1.5 | command="whoami"
 2025-08-12T17:07:59.649142Z | protocol=FTP | type=ftp | ip=192.168.1.5 | command="LIST"
+2025-08-18T07:32:50.609410Z | protocol=FTP | type=ftp | ip=127.0.0.1 | command="USER test\nPASS test123"
+2025-08-18T07:33:15.977105Z | protocol=FTP | type=ftp | ip=127.0.0.1 | command="USER test\nPASS test123"
+2025-08-18T07:34:19.468372Z | protocol=FTP | type=ftp | ip=127.0.0.1 | command="USER realuser\nPASS realpass"
+2025-08-18T07:34:32.428544Z | protocol=FTP | type=ftp | ip=127.0.0.1 | command="USER realuser\nPASS realpass"
+2025-08-18T07:34:43.882878Z | protocol=FTP | type=ftp | ip=127.0.0.1 | command="USER realuser\nPASS realpass"

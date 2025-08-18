@@ -35,8 +35,17 @@ class HTTPTrap(Trap):
         # חשוב! זה צריך להתאים למפתח שבו אתה רושם ב-TrapManager ("http")
         return "http"
 
-    def simulate_interaction(self, input_data: str, ip: str) -> None:
-        method, path, body = self._parse_request(input_data)
+    def simulate_interaction(self, input_data, ip: str):
+        # If input_data is a dict, build a raw request string
+        if isinstance(input_data, dict):
+            method = input_data.get("method", "GET")
+            path = input_data.get("path", "/")
+            payload = input_data.get("payload", "")
+            raw = f"{method} {path}\n{payload}" if payload else f"{method} {path}"
+        else:
+            raw = str(input_data)
+
+        method, path, body = self._parse_request(raw)
 
         # בחירת תשובה
         matched = path in self._routes and method in self._routes[path]
@@ -49,17 +58,17 @@ class HTTPTrap(Trap):
         # אופציונלי לשימוש פנימי/בדיקות
         self._last_response = {"status": status, "body": response_body}
         return {
-    "trap_type": self.get_type(),
-    "protocol": self.get_protocol(),
-    "ip": ip,
-    "input": input_data,
-    "timestamp": int(time.time()),
-    "data": {
-        "status": status,
-        "body": response_body,
-        "content_type": "application/json" if path.startswith("/api/") else "text/html"
-    }
-}
+            "trap_type": self.get_type(),
+            "protocol": self.get_protocol(),
+            "ip": ip,
+            "input": input_data,
+            "timestamp": int(time.time()),
+            "data": {
+                "status": status,
+                "body": response_body,
+                "content_type": "application/json" if path.startswith("/api/") else "text/html"
+            }
+        }
 
 
     # --- עזר ---
