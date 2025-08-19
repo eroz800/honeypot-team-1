@@ -1,0 +1,3 @@
+Your files have been locked.
+To recover them, send 1 BTC to 1FAKEADDRESS...
+This is a HONEYPOT SIMULATION — no real encryption was performed.
