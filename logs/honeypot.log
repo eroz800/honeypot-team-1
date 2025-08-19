@@ -42,3 +42,6 @@
 [2025-08-18 10:47:33] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
 [2025-08-18 10:48:13] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
 [2025-08-18 10:48:23] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-19 13:20:10] open_ports from 192.168.1.50: SCAN
+[2025-08-19 13:37:33] open_ports from 192.168.1.77: SCAN
+[2025-08-19 13:49:32] open_ports from 192.168.1.77: SCAN

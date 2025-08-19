@@ -6,6 +6,8 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, make_response, send_file
 from model.trap_manager import TrapManager
+from model.open_ports_trap import OpenPortsTrap
+
 try:
     from model.logger import log_interaction  # אם קיים – נשתמש; אם לא, נתעלם בשקט
 except Exception:
@@ -16,7 +18,8 @@ from model.report_generator import generate_report
 
 app = Flask(__name__)
 manager = TrapManager()
-
+manager.add_trap("open_ports", OpenPortsTrap())
+  
 
 @app.route("/")
 def home():
