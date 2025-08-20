@@ -13,11 +13,11 @@ class HTTPTrap(Trap):
     """
     מלכודת HTTP בסיסית המדמה GET/POST.
     input_data דוגמה:
-      "GET /"
-      "GET /api/health"
-      "POST /login\nuser=admin&pass=123456"
+      {"method": "GET", "path": "/"}
+      {"method": "POST", "path": "/login", "payload": "user=admin&pass=123456"}
     """
 
+    # מיפוי נתיבים ל־responses בהתאם לשיטה (GET/POST)
     _routes: Dict[str, Dict[str, str]] = field(default_factory=lambda: {
         "/": {"GET": "<h1>Welcome</h1><p>Internal Admin Portal</p>"},
         "/login": {
@@ -27,41 +27,42 @@ class HTTPTrap(Trap):
         "/api/health": {"GET": '{"status":"ok","version":"1.0.0"}'}
     })
 
-    # --- ממשק ה-ABC שלך ---
     def get_protocol(self) -> str:
         return "HTTP"
 
     def get_type(self) -> str:
-        # חשוב! זה צריך להתאים למפתח שבו אתה רושם ב-TrapManager ("http")
         return "http"
 
     def simulate_interaction(self, input_data, ip: str):
-        # If input_data is a dict, build a raw request string
+        # בניית בקשה גולמית ומחרוזת קריאה להצגה בלוגים/טבלה
         if isinstance(input_data, dict):
             method = input_data.get("method", "GET")
             path = input_data.get("path", "/")
             payload = input_data.get("payload", "")
+            pretty_input = f"Method: {method}, Path: {path}" + (f", Payload: {payload}" if payload else "")
             raw = f"{method} {path}\n{payload}" if payload else f"{method} {path}"
         else:
             raw = str(input_data)
+            pretty_input = raw
 
+        # ניתוח הבקשה למרכיבים
         method, path, body = self._parse_request(raw)
 
-        # בחירת תשובה
+        # בדיקת התאמה לנתיבים שהוגדרו
         matched = path in self._routes and method in self._routes[path]
         status = 200 if matched else 404
         response_body = self._routes.get(path, {}).get(method, "<h1>404</h1>")
 
-        # לוג לקובץ
+        # כתיבת שורת לוג לקובץ
         self._append_log_line(self._format_log(method, path, status, ip, body))
 
-        # אופציונלי לשימוש פנימי/בדיקות
+        # החזרת תשובה למערכת
         self._last_response = {"status": status, "body": response_body}
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
             "ip": ip,
-            "input": input_data,
+            "input": pretty_input,   # טקסט קריא במקום dict גולמי
             "timestamp": int(time.time()),
             "data": {
                 "status": status,
@@ -70,8 +71,8 @@ class HTTPTrap(Trap):
             }
         }
 
+    # --- פונקציות עזר ---
 
-    # --- עזר ---
     def _parse_request(self, raw: str) -> tuple[str, str, str]:
         raw = (raw or "").strip()
         if not raw:
@@ -98,3 +99,4 @@ class HTTPTrap(Trap):
         logs_dir = Path(__file__).resolve().parents[1] / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
         (logs_dir / "http_honeypot.log").open("a", encoding="utf-8").write(line)
+

@@ -21,6 +21,12 @@
           <option value="ssh">ssh</option>
           <option value="http">http</option>
           <option value="ftp">ftp</option>
+          <option value="phishing">phishing</option>
+          <option value="admin_panel">admin_panel</option>
+          <option value="open_ports">open_ports</option>
+          <option value="ransomware">ransomware</option>
+
+
         </select>
       </div>
       <div class="form-group">
@@ -44,20 +50,29 @@
 
   <script>
     document.getElementById("simulate-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const ip = document.getElementById("ip").value.trim();
-      const trap_type = document.getElementById("trap_type").value.trim();
-      const input = document.getElementById("input_json").value.trim();
+  e.preventDefault();
+  const ip = document.getElementById("ip").value.trim();
+  const trap_type = document.getElementById("trap_type").value.trim();
 
-      const res = await fetch("/simulate", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ ip, trap_type, input })
-      });
+ 
+  const inputText = document.getElementById("input_json").value.trim();
+  let input;
+  try {
+    input = inputText ? JSON.parse(inputText) : {};
+  } catch (e) {
+    input = {};
+  }
 
-      const data = await res.json();
-      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-    });
+  const res = await fetch("/simulate", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ ip, trap_type, input })
+  });
+
+  const data = await res.json();
+  document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+});
+
   </script>
 </body>
 </html>

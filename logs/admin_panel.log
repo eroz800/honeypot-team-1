@@ -1,13 +1,3 @@
-[AdminPanelTrap] 2025-08-17T21:25:45.238832 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T21:25:45.242535 | IP: 127.0.0.1 | User: admin | Success: False
-[AdminPanelTrap] 2025-08-17T21:36:18.186227 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T21:36:56.842676 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T21:36:57.505282 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T21:41:03.154338 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T21:41:09.082444 | IP: 127.0.0.1 | User: admin | Success: False
-[AdminPanelTrap] 2025-08-17T22:37:09.745538 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T22:37:36.246264 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T22:37:36.475786 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T22:37:40.119892 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T22:37:40.259542 | IP: 127.0.0.1 | User: admin | Success: True
-[AdminPanelTrap] 2025-08-17T22:37:40.370897 | IP: 127.0.0.1 | User: admin | Success: True
+[AdminPanelTrap] 2025-08-20T20:32:25.251861 | IP: 127.0.0.1 | User: admin | Success: True
+[AdminPanelTrap] 2025-08-20T20:32:25.252433 | IP: 127.0.0.1 | User: admin | Success: False
+[AdminPanelTrap] 2025-08-20T21:02:05.033387 | IP: 127.0.0.1 | User: admin | Success: False

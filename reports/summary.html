@@ -1,56 +1,41 @@
 <html>
-<head><title>Honeypot Report</title><link rel='stylesheet' href='/style.css'></head>
-<body>
-<h1>Honeypot Activity Summary</h1>
+<head><title>Honeypot Report</title>
+<link rel='stylesheet' href='/style.css'>
+<style>
+body { font-family: Arial; }
+.stats { margin: 20px 0; padding: 10px; background:#f0f0f0; border-radius:8px; }
+.report-table { border-collapse: collapse; width:100%; }
+.report-table th, .report-table td { border:1px solid #ddd; padding:8px; }
+.report-table th { background:#333; color:white; }
+</style>
+</head><body>
+<h1>📊 Honeypot Activity Summary</h1>
+<div class='stats'><h2>Summary Stats</h2><ul>
+<li>🎭 phishing: <b>3</b></li>
+<li>🔒 ssh: <b>7</b></li>
+<li>🌐 http: <b>1</b></li>
+<li>📁 ftp: <b>1</b></li>
+<li>🔍 open_ports: <b>1</b></li>
+<li>💀 ransomware: <b>1</b></li>
+<li>🛠️ admin_panel: <b>1</b></li>
+</ul></div>
 <table class='report-table'>
-<tr><th>Timestamp</th><th>Trap Type</th><th>IP</th><th>Input</th></tr>
-<tr><td>2025-08-04 15:11:54</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-04 15:12:31</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:29:14</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:29:57</td><td>http</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:30:01</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:30:12</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:30:13</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:30:13</td><td>ftp</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:48:09</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:53:09</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 19:55:48</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 20:01:56</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 20:06:21</td><td>ssh</td><td>192.168.1.5</td><td>whoami</td></tr>
-<tr><td>2025-08-12 20:07:12</td><td>http</td><td>192.168.1.5</td><td>GET /</td></tr>
-<tr><td>2025-08-12 20:07:59</td><td>ftp</td><td>192.168.1.5</td><td>LIST</td></tr>
-<tr><td>2025-08-13 17:40:02</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:40:22</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:43:22</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:45:23</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:54:21</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:56:57</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 17:58:05</td><td>Fake SSH Login</td><td>192.168.0.42</td><td>whoami</td></tr>
-<tr><td>2025-08-13 18:11:49</td><td>http</td><td>127.0.0.1</td><td>GET /</td></tr>
-<tr><td>2025-08-13 18:45:13</td><td>http</td><td>127.0.0.1</td><td>GET /</td></tr>
-<tr><td>2025-08-17 21:36:18</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 21:36:56</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 21:36:57</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 21:41:03</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 21:41:09</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '122'}</td></tr>
-<tr><td>2025-08-17 22:37:09</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 22:37:36</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 22:37:36</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 22:37:40</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 22:37:40</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-17 22:37:40</td><td>admin_panel</td><td>127.0.0.1</td><td>{'username': 'admin', 'password': '1234'}</td></tr>
-<tr><td>2025-08-18 10:32:50</td><td>ftp</td><td>127.0.0.1</td><td>{'username': 'test', 'password': 'test123'}</td></tr>
-<tr><td>2025-08-18 10:33:15</td><td>ftp</td><td>127.0.0.1</td><td>{'username': 'test', 'password': 'test123'}</td></tr>
-<tr><td>2025-08-18 10:34:19</td><td>ftp</td><td>127.0.0.1</td><td>{'username': 'realuser', 'password': 'realpass'}</td></tr>
-<tr><td>2025-08-18 10:34:32</td><td>ftp</td><td>127.0.0.1</td><td>{'username': 'realuser', 'password': 'realpass'}</td></tr>
-<tr><td>2025-08-18 10:34:43</td><td>ftp</td><td>127.0.0.1</td><td>{'username': 'realuser', 'password': 'realpass'}</td></tr>
-<tr><td>2025-08-18 10:46:35</td><td>http</td><td>127.0.0.1</td><td>{'method': 'GET', 'path': '/test', 'payload': ''}</td></tr>
-<tr><td>2025-08-18 10:47:33</td><td>http</td><td>127.0.0.1</td><td>{'method': 'GET', 'path': '/test', 'payload': ''}</td></tr>
-<tr><td>2025-08-18 10:48:13</td><td>http</td><td>127.0.0.1</td><td>{'method': 'GET', 'path': '/test', 'payload': ''}</td></tr>
-<tr><td>2025-08-18 10:48:23</td><td>http</td><td>127.0.0.1</td><td>{'method': 'GET', 'path': '/test', 'payload': ''}</td></tr>
-<tr><td>2025-08-19 13:20:10</td><td>open_ports</td><td>192.168.1.50</td><td>SCAN</td></tr>
-<tr><td>2025-08-19 13:37:33</td><td>open_ports</td><td>192.168.1.77</td><td>SCAN</td></tr>
-<tr><td>2025-08-19 13:49:32</td><td>open_ports</td><td>192.168.1.77</td><td>SCAN</td></tr>
+<tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
+<tr><td>2025-08-20 20:38:23</td><td>🎭 phishing</td><td>127.0.0.1</td><td><b>User:</b> gilad <br><b>Pass:</b> ••34</td></tr>
+<tr><td>2025-08-20 20:38:50</td><td>🎭 phishing</td><td>127.0.0.1</td><td><b>User:</b> DAVID <br><b>Pass:</b> ••12</td></tr>
+<tr><td>2025-08-20 20:40:24</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 20:40:26</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 20:55:10</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 20:55:21</td><td>🌐 http</td><td>127.0.0.1</td><td><b>GET</b> /admin</td></tr>
+<tr><td>2025-08-20 20:55:31</td><td>📁 ftp</td><td>127.0.0.1</td><td><b>Command:</b> LIST</td></tr>
+<tr><td>2025-08-20 20:55:41</td><td>🎭 phishing</td><td>127.0.0.1</td><td><b>User:</b> gilad <br><b>Pass:</b> ••34</td></tr>
+<tr><td>2025-08-20 20:56:03</td><td>🔍 open_ports</td><td>127.0.0.1</td><td><b>Port:</b> 22</td></tr>
+<tr><td>2025-08-20 20:56:15</td><td>💀 ransomware</td><td>127.0.0.1</td><td><b>File:</b> secret.docx</td></tr>
+<tr><td>2025-08-20 21:02:05</td><td>🛠️ admin_panel</td><td>127.0.0.1</td><td><b>User:</b> admin <br><b>Pass:</b> ••••••23</td></tr>
+<tr><td>2025-08-20 21:09:48</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 21:12:37</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 21:18:37</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
+<tr><td>2025-08-20 21:22:48</td><td>🔒 ssh</td><td>127.0.0.1</td><td><b>Command:</b> ls -la</td></tr>
 </table>
 </body>
 </html>

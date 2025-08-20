@@ -5,6 +5,7 @@ from .http_trap import HTTPTrap
 from .ftp_trap import FTPTrap
 from .ssh_trap import SshTrap
 from .admin_panel_trap import AdminPanelTrap
+from .phishing_trap import PhishingTrap 
 
 class TrapManager:
     def __init__(self):
@@ -14,6 +15,7 @@ class TrapManager:
         self._traps["ftp"]  = FTPTrap()
         self._traps["ssh"]  = SshTrap()
         self._traps["admin_panel"] = AdminPanelTrap()
+        self._traps["phishing"] = PhishingTrap()
 
     def get_trap(self, name: str):
         return self._traps.get(name)

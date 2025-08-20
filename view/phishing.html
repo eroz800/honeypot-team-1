@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phishing Login</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <form id="phishingForm">
+            <label>Username: <input type="text" name="username" required></label><br><br>
+            <label>Password: <input type="password" name="password" required></label><br><br>
+            <button type="submit">Login</button>
+        </form>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        document.getElementById('phishingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = '';
+
+            try {
+                const response = await fetch('/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        trap_type: 'phishing',
+                        input: { username, password },
+                        ip: "127.0.0.1"   // בשלב בדיקה לוקאלית
+                    })
+                });
+                const result = await response.json();
+                feedback.textContent = "Event logged: " + JSON.stringify(result);
+            } catch (err) {
+                feedback.textContent = 'Error communicating with server.';
+                feedback.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

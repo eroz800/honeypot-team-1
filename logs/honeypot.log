@@ -1,51 +1,18 @@
-[2025-08-04 15:11:54] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-04 15:12:31] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-12 19:29:14] ssh from 192.168.1.5: whoami
-[2025-08-12 19:29:57] http from 192.168.1.5: whoami
-[2025-08-12 19:30:01] ftp from 192.168.1.5: whoami
-[2025-08-12 19:30:12] ftp from 192.168.1.5: whoami
-[2025-08-12 19:30:13] ftp from 192.168.1.5: whoami
-[2025-08-12 19:30:13] ftp from 192.168.1.5: whoami
-[2025-08-12 19:48:09] ssh from 192.168.1.5: whoami
-[2025-08-12 19:53:09] ssh from 192.168.1.5: whoami
-[2025-08-12 19:55:48] ssh from 192.168.1.5: whoami
-[2025-08-12 20:01:56] ssh from 192.168.1.5: whoami
-[2025-08-12 20:06:21] ssh from 192.168.1.5: whoami
-[2025-08-12 20:07:12] http from 192.168.1.5: GET /
-[2025-08-12 20:07:59] ftp from 192.168.1.5: LIST
-[2025-08-13 17:40:02] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:40:22] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:43:22] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:45:23] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:54:21] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:56:57] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 17:58:05] Fake SSH Login from 192.168.0.42: whoami
-[2025-08-13 18:11:49] http from 127.0.0.1: GET /
-[2025-08-13 18:45:13] http from 127.0.0.1: GET /
-[2025-08-17 21:36:18] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 21:36:56] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 21:36:57] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 21:41:03] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 21:41:09] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '122'}
-[2025-08-17 22:37:09] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 22:37:36] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 22:37:36] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-17 22:37:40] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
-[2025-08-18 10:32:50] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
-[2025-08-18 10:33:15] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
-[2025-08-18 10:34:19] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
-[2025-08-18 10:34:32] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
-[2025-08-18 10:34:43] ftp from 127.0.0.1: {'username': 'realuser', 'password': 'realpass'}
-[2025-08-18 10:46:35] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
-[2025-08-18 10:47:33] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
-[2025-08-18 10:48:13] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
-[2025-08-18 10:48:23] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
-[2025-08-19 13:20:10] open_ports from 192.168.1.50: SCAN
-[2025-08-19 13:37:33] open_ports from 192.168.1.77: SCAN
-[2025-08-19 13:49:32] open_ports from 192.168.1.77: SCAN
-[2025-08-19 16:49:20] ransomware from 192.168.1.77: TEST-RANSOM
-[2025-08-19 17:44:05] ransomware from 192.168.1.77: TEST-RANSOM
-[2025-08-19 19:00:24] ransomware from 192.168.1.77: TEST-RANSOM
-[2025-08-19 19:12:12] ransomware from 192.168.1.77: TEST-RANSOM
+{"trap": "phishing", "protocol": "HTTP", "username": "{\"username\": \"gilad\", \"password\": \"1234\"}", "password": "127.0.0.1", "ip": "127.0.0.1", "time": "2025-08-20 20:38:23"}
+[2025-08-20 20:38:23] phishing from 127.0.0.1: {"username": "gilad", "password": "1234"}
+{"trap": "phishing", "protocol": "HTTP", "username": {"username": "DAVID", "password": "1212"}, "password": "127.0.0.1", "ip": "127.0.0.1", "time": "2025-08-20 20:38:50"}
+[2025-08-20 20:38:50] phishing from 127.0.0.1: {'username': 'DAVID', 'password': '1212'}
+[2025-08-20 20:40:24] ssh from 127.0.0.1: {"command": "ls -la"}
+[2025-08-20 20:40:26] ssh from 127.0.0.1: {"command": "ls -la"}
+[2025-08-20 20:55:10] ssh from 127.0.0.1: {"command": "ls -la"}
+[2025-08-20 20:55:21] http from 127.0.0.1: {"method": "GET", "path": "/admin"}
+[2025-08-20 20:55:31] ftp from 127.0.0.1: {"command": "LIST"}
+{"trap": "phishing", "protocol": "HTTP", "username": "{\"username\": \"gilad\", \"password\": \"1234\"}", "password": "127.0.0.1", "ip": "127.0.0.1", "time": "2025-08-20 20:55:41"}
+[2025-08-20 20:55:41] phishing from 127.0.0.1: {"username": "gilad", "password": "1234"}
+[2025-08-20 20:56:03] open_ports from 127.0.0.1: {"port": 22}
+[2025-08-20 20:56:15] ransomware from 127.0.0.1: {"file": "secret.docx"}
+[2025-08-20 21:02:05] admin_panel from 127.0.0.1: {'username': 'admin', 'password': 'admin123'}
+[2025-08-20 21:09:48] ssh from 127.0.0.1: {'command': 'ls -la'}
+[2025-08-20 21:12:37] ssh from 127.0.0.1: {'command': 'ls -la'}
+[2025-08-20 21:18:37] ssh from 127.0.0.1: {'command': 'ls -la'}
+[2025-08-20 21:22:48] ssh from 127.0.0.1: {'command': 'ls -la'}

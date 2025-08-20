@@ -9,7 +9,7 @@ class OpenPortsTrap(Trap):
     """
     Trap שמדמה שירות פתוח (TCP) ומחזיר Banner, עם רישום לוג.
     """
-    name = "open_ports"  # המפתח שבו נרשום ב-TrapManager
+    name = "open_ports"  
 
     # --- מימושי ה-ABC ---
     def get_protocol(self) -> str:

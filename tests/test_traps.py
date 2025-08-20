@@ -1,7 +1,8 @@
 # tests/test_traps.py
 import time
 import pytest
-
+from model.phishing_trap import PhishingTrap
+from pathlib import Path
 from model.trap_manager import TrapManager
 
 
@@ -149,3 +150,29 @@ def test_timestamp_is_recent(manager):
     ts = res["timestamp"]
     now = int(time.time())
     assert start - 2 <= ts <= now + 2
+
+
+LOG_PATH = Path(__file__).resolve().parents[1] / "logs" / "honeypot.log"
+
+def clear_log():
+    if LOG_PATH.exists():
+        LOG_PATH.write_text("")
+
+def test_phishing_trap_saves_credentials():
+    clear_log()
+    trap = PhishingTrap()
+    trap.simulate_interaction("giladb", "1234", "127.0.0.1")
+
+    content = LOG_PATH.read_text()
+    assert "giladb" in content
+    assert "1234" in content
+    assert "127.0.0.1" in content
+
+def test_phishing_trap_missing_data():
+    clear_log()
+    trap = PhishingTrap()
+    trap.simulate_interaction("", "", "127.0.0.1")
+
+    content = LOG_PATH.read_text()
+    # לא אמור להישמר משתמש ריק
+    assert "username': ''" not in content

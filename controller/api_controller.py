@@ -1,4 +1,4 @@
-# controller/api_controller.py
+
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pathlib import Path
@@ -8,10 +8,15 @@ from flask import Flask, request, jsonify, send_from_directory, render_template_
 from model.trap_manager import TrapManager
 from model.open_ports_trap import OpenPortsTrap
 from model.ransomware_trap import RansomwareTrap
+from model.phishing_trap import PhishingTrap
+from model.ssh_trap import SshTrap
+from model.http_trap import HTTPTrap
+from model.ftp_trap import FTPTrap
+from model.admin_panel_trap import AdminPanelTrap
 
 
 try:
-    from model.logger import log_interaction  # אם קיים – נשתמש; אם לא, נתעלם בשקט
+    from model.logger import log_interaction 
 except Exception:
     log_interaction = None
 
@@ -22,6 +27,11 @@ app = Flask(__name__)
 manager = TrapManager()
 manager.add_trap("open_ports", OpenPortsTrap())
 manager.add_trap("ransomware", RansomwareTrap())
+manager.add_trap("phishing", PhishingTrap())
+manager.add_trap("ssh", SshTrap())
+manager.add_trap("http", HTTPTrap())
+manager.add_trap("ftp", FTPTrap())
+manager.add_trap("admin_panel", AdminPanelTrap())
 
 @app.route("/")
 def home():
@@ -63,6 +73,11 @@ def summary():
 @app.route("/admin_panel.html")
 def admin_panel():
     return send_from_directory(str(BASE_DIR / "view"), "admin_panel.html")
+
+
+@app.route("/phishing.html")
+def phishing():
+    return send_from_directory(str(BASE_DIR / "view"), "phishing.html")
 
 # ---------- Generic simulation endpoint ----------
 @app.route("/simulate", methods=["POST"])

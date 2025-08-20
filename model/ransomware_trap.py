@@ -23,7 +23,7 @@ class RansomwareTrap(Trap):
     """
     name: str = "ransomware"   # המפתח ב-TrapManager
 
-    # --- ממשק אחיד כמו בשאר ה-traps ---
+    
     def get_protocol(self) -> str:
         return "FILE"
 
