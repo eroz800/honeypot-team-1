@@ -4,6 +4,7 @@ import ast
 import json
 from collections import Counter
 
+
 def _mask_password(p: str) -> str:
     if not p:
         return ""
@@ -11,12 +12,12 @@ def _mask_password(p: str) -> str:
         return "•" * len(p)
     return "•" * (len(p) - 2) + p[-2:]
 
+
 def _format_input(trap_type: str, input_data: str) -> str:
     """
     מציג את ה-input בטבלה בצורה קריאה לפי סוג הטראפ.
-    לדוגמה: SSH -> Command, HTTP -> Method+Path, Phishing -> User/Pass.
     """
-    text = input_data.strip()
+    text = str(input_data).strip()
     parsed = None
 
     # ננסה לפרסר dict (או JSON) אם אפשר
@@ -29,31 +30,54 @@ def _format_input(trap_type: str, input_data: str) -> str:
             parsed = None
 
     if isinstance(parsed, dict):
-        # טיפול ב־phishing / ftp (username+password)
+        t = trap_type.lower()
+
+        # פישינג / FTP / IoT
         if "username" in parsed or "password" in parsed:
             uname_s = html.escape(str(parsed.get("username", "")))
             pwd_s = _mask_password(str(parsed.get("password", "")))
-            return f"<b>User:</b> {uname_s} <br><b>Pass:</b> {pwd_s}"
+            dns_s = html.escape(str(parsed.get("dns", ""))) if "dns" in parsed else None
+            target = html.escape(str(parsed.get("target", ""))) if "target" in parsed else None
 
-        # טיפול ב־ssh (command)
+            out = f"<b>User:</b> {uname_s} <br><b>Pass:</b> {pwd_s}"
+            if dns_s:
+                out += f"<br><b>DNS:</b> {dns_s}"
+            if target:
+                out += f"<br><b>Target:</b> {target}"
+            return out
+
+        # SSH
         if "command" in parsed:
             return f"<b>Command:</b> {html.escape(str(parsed['command']))}"
 
-        # טיפול ב־http (method + path)
+        # HTTP
+       
         if "method" in parsed and "path" in parsed:
-            return f"<b>{html.escape(parsed['method'])}</b> {html.escape(parsed['path'])}"
+            method = html.escape(str(parsed.get("method", "")))
+            path = html.escape(str(parsed.get("path", "")))
+            payload = html.escape(str(parsed.get("payload", ""))) if "payload" in parsed else ""
+            out = f"<b>Method:</b> {method} <br><b>Path:</b> {path}"
+            if payload:
+                out += f"<br><b>Payload:</b> {payload}"
+            return out
 
-        # טיפול ב־open_ports / ransomware / others
+        
+
+        # Open Ports
         if "port" in parsed:
             return f"<b>Port:</b> {html.escape(str(parsed['port']))}"
-        if "file" in parsed:
-            return f"<b>File:</b> {html.escape(str(parsed['file']))}"
+
+        # Ransomware
+        if "file" in parsed and t == "ransomware":
+            fname = html.escape(str(parsed["file"]))
+            return f"<b>File:</b> {fname} <br><b>Status:</b> Encrypted"
 
         # ברירת מחדל – JSON מלא
         return html.escape(json.dumps(parsed, ensure_ascii=False))
 
     # אם זה לא dict – מחזירים כמו שזה
     return html.escape(text)
+
 
 def _trap_icon(trap_type: str) -> str:
     mapping = {
@@ -64,9 +88,10 @@ def _trap_icon(trap_type: str) -> str:
         "phishing": "🎭",
         "open_ports": "🔍",
         "ransomware": "💀",
-        "iot": "📡",
+        "iot_router": "📡",
     }
     return mapping.get(trap_type.lower(), "❓")
+
 
 def _looks_like_csv(line: str) -> bool:
     if line.count(", ") < 3:
@@ -74,6 +99,7 @@ def _looks_like_csv(line: str) -> bool:
     if len(line) >= 19 and line[4] == "-" and line[7] == "-" and line[13] == ":" and line[16] == ":":
         return True
     return False
+
 
 def generate_report():
     base_dir = Path(__file__).resolve().parents[1]
@@ -87,6 +113,7 @@ def generate_report():
 
     rows = []
     trap_counter = Counter()
+    seen_inputs = {}
 
     for raw in log_lines:
         line = raw.strip()
@@ -96,7 +123,7 @@ def generate_report():
         try:
             if line.startswith("[") and "]" in line and " from " in line and ": " in line:
                 timestamp = line[1:20]
-                rest = line[line.index("]") + 2 :].strip()
+                rest = line[line.index("]") + 2:].strip()
                 trap_type, after_type = rest.split(" from ", 1)
                 ip, input_data = after_type.split(": ", 1)
 
@@ -110,7 +137,21 @@ def generate_report():
                 continue
 
             trap_counter[trap_type] += 1
-            rows.append((timestamp, trap_type, ip, input_data))
+
+            # מנגנון לכפילויות
+            key = (trap_type, ip, input_data)
+            if key in seen_inputs:
+                idx = seen_inputs[key]
+                ts0, trap0, ip0, inp0 = rows[idx]
+                if "(x" in inp0:
+                    base, num = inp0.rsplit("(x", 1)
+                    num = int(num.strip(")")) + 1
+                    rows[idx] = (ts0, trap0, ip0, f"{base.strip()} (x{num})")
+                else:
+                    rows[idx] = (ts0, trap0, ip0, f"{inp0} (x2)")
+            else:
+                seen_inputs[key] = len(rows)
+                rows.append((timestamp, trap_type, ip, input_data))
 
         except Exception:
             continue
@@ -142,7 +183,13 @@ def generate_report():
     html_lines.append("<tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>")
 
     for ts, trap, ip, input_data in rows:
-        pretty_input = _format_input(trap, input_data)
+        # נוסיף תמיכה ב־raw_input
+        if isinstance(input_data, dict) and "raw_input" in input_data:
+            display_input = input_data.get("input") or input_data["raw_input"]
+        else:
+            display_input = input_data
+
+        pretty_input = _format_input(trap, display_input)
         html_lines.append(
             f"<tr><td>{html.escape(str(ts))}</td>"
             f"<td>{_trap_icon(trap)} {html.escape(str(trap))}</td>"

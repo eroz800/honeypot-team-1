@@ -1,10 +1,14 @@
 
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# FILE: controller/api_controller.py
+from flask import Flask, request, jsonify, send_from_directory, render_template_string, send_file
 from pathlib import Path
+import sys, os
+
+# --- הגדרות בסיס ---
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-from flask import Flask, request, jsonify, send_from_directory, render_template_string, make_response, send_file
+# --- יבוא טראפים ומנג'ר ---
 from model.trap_manager import TrapManager
 from model.open_ports_trap import OpenPortsTrap
 from model.ransomware_trap import RansomwareTrap
@@ -13,16 +17,16 @@ from model.ssh_trap import SshTrap
 from model.http_trap import HTTPTrap
 from model.ftp_trap import FTPTrap
 from model.admin_panel_trap import AdminPanelTrap
-
+from model.iot_router_trap import IoTRouterTrap
 
 try:
-    from model.logger import log_interaction 
+    from model.logger import log_interaction
 except Exception:
     log_interaction = None
 
-# ייבוא הפונקציה שמייצרת את הדוח ומחזירה נתיב מוחלט
 from model.report_generator import generate_report
 
+# --- Flask app + Manager ---
 app = Flask(__name__)
 manager = TrapManager()
 manager.add_trap("open_ports", OpenPortsTrap())
@@ -32,7 +36,10 @@ manager.add_trap("ssh", SshTrap())
 manager.add_trap("http", HTTPTrap())
 manager.add_trap("ftp", FTPTrap())
 manager.add_trap("admin_panel", AdminPanelTrap())
+manager.add_trap("iot_router", IoTRouterTrap())
 
+
+# ---------- Routes בסיס ----------
 @app.route("/")
 def home():
     return "Honeypot is live"
@@ -44,32 +51,29 @@ def dashboard():
     with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
         return render_template_string(f.read())
 
+
 @app.route("/report")
 def show_report():
-    """
-    מייצר את הדוח בכל בקשה ומגיש את הקובץ המלא ישירות לדפדפן.
-    זה עוקף בעיות נתיב/סביבת ריצה כי משתמשים בנתיב המוחלט שהפונקציה מחזירה.
-    """
     try:
-        out_path = generate_report()  # Path אובייקט מוחלט ל-reports/summary.html
+        out_path = generate_report()
         return send_file(str(out_path), mimetype="text/html")
     except FileNotFoundError:
         return "<h1>אין דוח זמין</h1><p>לא נמצאו קבצי לוג ליצירת דוח.</p>", 404
     except Exception as e:
         return f"<h1>שגיאה ביצירת הדוח</h1><pre>{e}</pre>", 500
 
+
+@app.route("/summary")
+def summary():
+    return show_report()   # מצביע על הפונקציה שכבר מחזירה את הדוח
+
+
 @app.route("/style.css")
 def style():
     return send_from_directory(str(BASE_DIR / "view"), "style.css")
 
 
-
-@app.route("/summary")
-def summary():
-    out_path = generate_report()
-    with out_path.open("r", encoding="utf-8") as f:
-        return render_template_string(f.read())
-    
+# ---------- Views (UI) ----------
 @app.route("/admin_panel.html")
 def admin_panel():
     return send_from_directory(str(BASE_DIR / "view"), "admin_panel.html")
@@ -79,75 +83,91 @@ def admin_panel():
 def phishing():
     return send_from_directory(str(BASE_DIR / "view"), "phishing.html")
 
+
+@app.route("/router_ui.html")
+def router_ui():
+    return send_from_directory(str(BASE_DIR / "view"), "router_ui.html")
+
+
+# ---------- Traps (API) ----------
+@app.route("/trap/phishing", methods=["POST"])
+def trap_phishing():
+    trap = manager.get_trap("phishing")
+    data = request.form.to_dict() or request.get_json(silent=True) or {}
+    ip = request.remote_addr
+    result = trap.simulate_interaction(data, ip)
+    if log_interaction:
+        try:
+            log_interaction("phishing", ip, data)
+        except Exception:
+            pass
+    return jsonify(result)
+
+
+@app.route("/trap/admin_panel", methods=["POST"])
+def trap_admin_panel():
+    trap = manager.get_trap("admin_panel")
+    data = request.form.to_dict() or request.get_json(silent=True) or {}
+    ip = request.remote_addr
+    result = trap.simulate_interaction(data, ip)
+    if log_interaction:
+        try:
+            log_interaction("admin_panel", ip, data)
+        except Exception:
+            pass
+    return jsonify(result)
+
+
+@app.route("/trap/iot_router", methods=["GET", "POST"])
+def trap_iot_router():
+    if request.method == "GET":
+        # כדי שהטסט test_iot_router_get יעבור → מחזירים את הקובץ router_ui.html
+        return send_from_directory(str(BASE_DIR / "view"), "router_ui.html")
+
+    # POST
+    trap = manager.get_trap("iot_router")
+    data = request.form.to_dict() or request.get_json(silent=True) or {}
+    ip = request.remote_addr
+    result = trap.simulate_interaction(data, ip)
+
+    # החזרת נתונים: גם המקוריים (כולל ssid) וגם מהסימולציה
+    response_data = data.copy()
+    response_data.update(result.get("data", {}))
+
+    if log_interaction:
+        try:
+            log_interaction("iot_router", ip, data)
+        except Exception:
+            pass
+
+    return jsonify({"status": "ok", "data": response_data})
+
+
 # ---------- Generic simulation endpoint ----------
 @app.route("/simulate", methods=["POST"])
 def simulate():
     data = request.get_json(silent=True) or {}
-
-    trap_type_raw = data.get("trap_type")
-    if isinstance(trap_type_raw, str):
-        trap_type = trap_type_raw.strip().lower()
-    else:
-        trap_type = str(trap_type_raw).lower()
-    input_data = data.get("input")  # יכול להיות dict (http/ftp) או str (ssh)
+    trap_type = str(data.get("trap_type", "")).lower()
+    input_data = data.get("input", {})
     ip = data.get("ip") or request.headers.get("X-Forwarded-For", request.remote_addr)
 
     if not trap_type:
         return jsonify({"error": "Missing trap_type"}), 400
     if not ip:
         return jsonify({"error": "Missing ip"}), 400
-    if input_data is None:
-        input_data = {}
 
     try:
         result = manager.run_trap(trap_type, input_data, ip)
-
-        # לוג אם זמין
         if log_interaction:
             try:
                 log_interaction(trap_type, ip, input_data)
             except Exception:
                 pass
-
-        # מחזירים אך ורק את התוצאה של ה-Manager, בלי עטיפה נוספת
         return jsonify(result), 200
-
     except KeyError:
         return jsonify({"error": f"Trap '{trap_type}' not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-# ---------- (אופציונלי) פרוקסי ל-HTTPTrap לבדיקות אמיתיות ב-GET/POST ----------
-@app.route("/trap/http", defaults={"req_path": ""}, methods=["GET", "POST"])
-@app.route("/trap/http/<path:req_path>", methods=["GET", "POST"])
-def http_trap_proxy(req_path):
-    method = request.method
-    path = "/" + req_path
-
-    payload = request.get_json(silent=True)
-    if payload is None:
-        payload = request.get_data(as_text=True) or ""
-
-    input_data = {"method": method, "path": path, "payload": payload}
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
-
-    try:
-        result = manager.run_trap("http", input_data, ip) or {}
-
-        # תמיכה גם כשה-Manager מחזיר עטיפה וגם כשהתוצאה כבר "שטוחה"
-        inner = result.get("result", result)
-        data  = inner.get("data", inner)
-
-        status = int(data.get("status", 200))
-        body = data.get("body", "")
-        content_type = data.get("content_type", "text/html")
-
-        resp = make_response(body, status)
-        resp.headers["Content-Type"] = content_type
-        return resp
-    except Exception as e:
-        return make_response(f"HTTPTrap error: {e}", 500)
 
 
 if __name__ == "__main__":

@@ -22,3 +22,19 @@
 [2025-08-20 18:07:03] phishing from 127.0.0.1: {'username': 'maor', 'password': '1234'}
 [2025-08-20 18:13:47] admin_panel from 127.0.0.1: {'username': 'aa', 'password': 'aa'}
 [2025-08-20 18:14:06] phishing from 127.0.0.1: {'username': 'aa', 'password': 'aa'}
+[2025-08-21 12:55:28] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 12:55:28] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:03:04] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 13:03:04] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:05:15] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 13:05:15] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:06:18] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 13:06:18] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:07:06] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 13:07:06] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:07:46] ftp from 127.0.0.1: {'username': 'test', 'password': 'test123'}
+[2025-08-21 13:07:46] http from 127.0.0.1: {'method': 'GET', 'path': '/test', 'payload': ''}
+[2025-08-21 13:27:31] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+[2025-08-21 13:28:08] admin_panel from 127.0.0.1: {'username': 'admin', 'password': '1234'}
+2025-08-21 13:33:06 | Trap: admin_panel | IP: 127.0.0.1 | Input: username=aa, password=aa
+2025-08-21 13:36:20 | Trap: phishing | IP: 127.0.0.1 | Input: username=aa, password=aa

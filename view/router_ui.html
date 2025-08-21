@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IoT Router - Management</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px #ccc; 
+        }
+        h1 { text-align: center; margin-bottom: 20px; }
+        label { display: block; margin: 10px 0 5px; }
+        input { width: 100%; padding: 8px; margin-bottom: 15px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        .feedback { color: green; font-weight: bold; margin-top: 10px; }
+        .error { color: red; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IoT Router Management</h1>
+        <form id="routerForm">
+            <label for="ssid">WiFi SSID:</label>
+            <input type="text" id="ssid" name="ssid" required>
+
+            <label for="password">WiFi Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="dns">DNS Server:</label>
+            <input type="text" id="dns" name="dns" value="8.8.8.8">
+
+            <button type="submit">Save Settings</button>
+        </form>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        document.getElementById('routerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const ssid = e.target.ssid.value;
+            const password = e.target.password.value;
+            const dns = e.target.dns.value;
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = '';
+            feedback.className = '';
+
+            try {
+                const response = await fetch('/trap/iot_router', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ssid, password, dns })
+                });
+                const result = await response.json();
+                feedback.textContent = 'Settings saved! Event logged.';
+                feedback.className = 'feedback';
+                console.log(result);
+            } catch (err) {
+                feedback.textContent = 'Error communicating with server.';
+                feedback.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

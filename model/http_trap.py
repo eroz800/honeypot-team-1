@@ -34,16 +34,14 @@ class HTTPTrap(Trap):
         return "http"
 
     def simulate_interaction(self, input_data, ip: str):
-        # בניית בקשה גולמית ומחרוזת קריאה להצגה בלוגים/טבלה
+        # בניית בקשה גולמית
         if isinstance(input_data, dict):
             method = input_data.get("method", "GET")
             path = input_data.get("path", "/")
             payload = input_data.get("payload", "")
-            pretty_input = f"Method: {method}, Path: {path}" + (f", Payload: {payload}" if payload else "")
             raw = f"{method} {path}\n{payload}" if payload else f"{method} {path}"
         else:
             raw = str(input_data)
-            pretty_input = raw
 
         # ניתוח הבקשה למרכיבים
         method, path, body = self._parse_request(raw)
@@ -62,7 +60,7 @@ class HTTPTrap(Trap):
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
             "ip": ip,
-            "input": pretty_input,   # טקסט קריא במקום dict גולמי
+            "input": raw,   # 🔑 שינוי: מחזירים את המחרוזת הגולמית לטסטים
             "timestamp": int(time.time()),
             "data": {
                 "status": status,
@@ -99,4 +97,5 @@ class HTTPTrap(Trap):
         logs_dir = Path(__file__).resolve().parents[1] / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
         (logs_dir / "http_honeypot.log").open("a", encoding="utf-8").write(line)
+
 

@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime, UTC
 from pathlib import Path
 import time
+import json
+import ast
 from .trap import Trap
 
 class OpenPortsTrap(Trap):
@@ -11,34 +13,51 @@ class OpenPortsTrap(Trap):
     """
     name = "open_ports"  
 
-    # --- מימושי ה-ABC ---
     def get_protocol(self) -> str:
         return "TCP"
 
     def get_type(self) -> str:
         return "open_ports"
 
-    def simulate_interaction(self, input_data: str, ip: str):
+    def simulate_interaction(self, input_data, ip: str):
         banner = "Fake Open Port Service Banner"
 
-        # לוג
-        self._append_log_line(self._format_log(ip=ip, input_data=input_data, banner=banner))
+        # --- ניתוח input ---
+        parsed = None
+        pretty_input = None
+        if isinstance(input_data, dict):
+            parsed = input_data
+        elif isinstance(input_data, str):
+            try:
+                parsed = ast.literal_eval(input_data)
+            except Exception:
+                try:
+                    parsed = json.loads(input_data)
+                except Exception:
+                    parsed = None
 
-        # תשובה ל-UI/בדיקות
+        if isinstance(parsed, dict) and "port" in parsed:
+            pretty_input = f"Port: {parsed['port']}"
+        else:
+            pretty_input = str(input_data).strip()
+
+        # לוג
+        self._append_log_line(self._format_log(ip=ip, input_data=pretty_input, banner=banner))
+
+        # נחזיר גם raw וגם קריא
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
             "ip": ip,
-            "input": input_data,
+            "input": pretty_input,
+            "raw_input": input_data,   # נשמור גם את המקור למקרה הצורך
             "timestamp": int(time.time()),
             "data": {"banner": banner}
         }
 
-    # כדי לעבוד חלק עם TrapManager שמפעיל run()
-    def run(self, input_data: str, ip: str):
+    def run(self, input_data, ip: str):
         return self.simulate_interaction(input_data, ip)
 
-    # --- עזרי לוג ---
     def _format_log(self, ip: str, input_data: str, banner: str) -> str:
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         input_data = (input_data or "").replace("\n", "\\n")[:200]
@@ -52,6 +71,8 @@ class OpenPortsTrap(Trap):
 
 
 if __name__ == "__main__":
-    # בדיקה ידנית מהירה: py -m model.open_ports_trap
     t = OpenPortsTrap()
-    print(t.run("PING", "127.0.0.1"))
+    print(t.run({"port": 22}, "127.0.0.1"))
+    print(t.run('{"port": 80}', "127.0.0.1"))
+    print(t.run("ping test", "127.0.0.1"))
+
