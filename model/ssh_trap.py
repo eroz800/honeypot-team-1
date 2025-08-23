@@ -1,5 +1,6 @@
 from model.trap import Trap
-from model.logger import log_event  # ← זה היה חסר
+from model.logger import log_interaction  # ← שימוש בשם הפונקציה שלך
+
 import time
 
 class SshTrap(Trap):
@@ -10,8 +11,7 @@ class SshTrap(Trap):
         return "ssh"
 
     def simulate_interaction(self, input_data: str, ip: str) -> dict:
-        log_line = f"[SSH] Interaction from {ip}: {input_data}"
-        log_event("honeypot.log", log_line)  # ← הוספנו את זה
+        log_interaction(self.get_type(), ip, input_data)  # ← כתיבה ללוג
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
@@ -19,6 +19,6 @@ class SshTrap(Trap):
             "input": input_data,
             "timestamp": int(time.time()),
             "data": {
-                "log": log_line
+                "message": "interaction logged"
             }
         }
