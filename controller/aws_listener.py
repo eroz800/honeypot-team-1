@@ -1,5 +1,5 @@
 from flask import Flask, request
-from trap_manager import TrapManager  # וודאי שקיים בקוד שלך
+from model.trap_manager import TrapManager
 
 app = Flask(__name__)
 trap_manager = TrapManager()
