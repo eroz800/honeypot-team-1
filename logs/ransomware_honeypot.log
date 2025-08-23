@@ -94,3 +94,8 @@
 2025-08-21T12:01:44.191068Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:invoice_2025.pdf -> invoice_2025.pdf.locked"
 2025-08-21T12:01:44.191746Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:resume.docx -> resume.docx.locked"
 2025-08-21T12:01:44.192626Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="summary: changed=4 note=README.txt"
+2025-08-21T21:15:45.007522Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:a.pdf -> a.pdf.locked"
+2025-08-21T21:15:45.008325Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:b.docx -> b.docx.locked"
+2025-08-21T21:15:45.009110Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:invoice_2025.pdf -> invoice_2025.pdf.locked"
+2025-08-21T21:15:45.009769Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:resume.docx -> resume.docx.locked"
+2025-08-21T21:15:45.011159Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="summary: changed=4 note=README.txt"
