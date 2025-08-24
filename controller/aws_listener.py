@@ -1,5 +1,6 @@
 from flask import Flask, request
 from model.trap_manager import TrapManager
+import os
 
 app = Flask(__name__)
 trap_manager = TrapManager()
@@ -18,4 +19,14 @@ def health():
     return {"status": "running"}, 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    HP_HOST = os.getenv("HP_HOST", "0.0.0.0")
+    HP_PORT = int(os.getenv("HP_PORT", 80))
+    SSL_CERT = os.getenv("HP_SSL_CERT")
+    SSL_KEY = os.getenv("HP_SSL_KEY")
+    ssl_context = (SSL_CERT, SSL_KEY) if SSL_CERT and SSL_KEY else None
+
+    app.run(
+        host=HP_HOST,
+        port=HP_PORT,
+        ssl_context=ssl_context
+    )
