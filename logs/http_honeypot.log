@@ -45,3 +45,4 @@
 2025-08-21T12:00:43.186383Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=POST | path=/login | status=200 | body="user=admin&pass=123"
 2025-08-21T12:01:43.956154Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
 2025-08-21T21:15:44.698332Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/test | status=404 | body=""
+2025-08-24T09:13:31.948806Z | protocol=HTTP | type=http | ip=127.0.0.1 | method=GET | path=/admin | status=404 | body=""

@@ -1,21 +1,24 @@
-<html>
-<head><title>Honeypot Report</title>
-<link rel='stylesheet' href='/style.css'>
-<style>
-body { font-family: Arial; }
-.stats { margin: 20px 0; padding: 10px; background:#f0f0f0; border-radius:8px; }
-.report-table { border-collapse: collapse; width:100%; }
-.report-table th, .report-table td { border:1px solid #ddd; padding:8px; }
-.report-table th { background:#333; color:white; }
-</style>
+<html><head><meta charset='utf-8'><title>Honeypot Report</title>
+
+    <style>
+      body { font-family: system-ui, Arial; margin:20px; background:#0b1220; color:#e6edf3;}
+      h1{margin:0 0 10px;}
+      .stats{margin:20px 0;padding:10px;background:#111a2e;border:1px solid #1d2a44;border-radius:8px;}
+      table{border-collapse:collapse;width:100%;background:#0e1730;}
+      th,td{border:1px solid #1d2a44;padding:8px;font-size:14px;}
+      th{background:#101a36;}
+      tr:hover td{background:#0f1a35;}
+    </style>
+    <script>setTimeout(()=>location.reload(),10000);</script>
+    
 </head><body>
 <h1>📊 Honeypot Activity Summary</h1>
 <div class='stats'><h2>Summary Stats</h2><ul>
 <li>🛠️ admin_panel: <b>1</b></li>
+<li>🔒 ssh: <b>3</b></li>
 </ul></div>
-<table class='report-table'>
-<tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
+<table><tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
+<tr><td>2025-08-24 12:04:31</td><td>🔒 ssh</td><td>127.0.0.1</td><td>whoami (x2)</td></tr>
+<tr><td>2025-08-23 16:01:48</td><td>🔒 ssh</td><td>89.139.53.17</td><td>test from week 4</td></tr>
 <tr><td>2025-08-22 00:16:35</td><td>🛠️ admin_panel</td><td>127.0.0.1</td><td>{}</td></tr>
-</table>
-</body>
-</html>
+</table></body></html>

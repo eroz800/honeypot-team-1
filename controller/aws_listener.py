@@ -1,21 +1,52 @@
-from flask import Flask, request
+# controller/aws_listener.py
+from flask import Flask, request, jsonify, Request
 from model.trap_manager import TrapManager
 
 app = Flask(__name__)
 trap_manager = TrapManager()
 
+
+def _client_ip(req: Request) -> str:
+    """
+    מחזיר את כתובת ה-IP של הלקוח.
+    אם נהיה מאחורי Nginx, ניקח מ-X-Forwarded-For; אחרת מ-remote_addr.
+    """
+    fwd = req.headers.get("X-Forwarded-For", "")
+    return fwd.split(",")[0].strip() if fwd else req.remote_addr
+
+
 @app.route("/ingest", methods=["POST"])
 def ingest():
-    data = request.get_json()
+    """
+    מצפה ל-JSON:
+    {
+      "trap_type": "open_ports" | "ssh" | "http" | ...,
+      "input": <string or object>,
+      "ip": (לא חובה)
+    }
+    """
+    data = request.get_json(silent=True) or {}
+
     trap_type = data.get("trap_type")
     input_data = data.get("input")
-    ip = request.remote_addr
-    trap_manager.run_trap(trap_type, input_data, ip)
-    return {"status": "ok"}, 200
+    ip = data.get("ip") or _client_ip(request)
+
+    if not trap_type or input_data is None:
+        return jsonify({"error": "trap_type and input are required"}), 400
+
+    try:
+        trap_manager.run_trap(trap_type, input_data, ip)
+        return jsonify({"status": "ok"}), 200
+    except Exception:
+        return jsonify({"status": "error"}), 500
+
 
 @app.route("/health", methods=["GET"])
 def health():
-    return {"status": "running"}, 200
+    return jsonify({"status": "running"}), 200
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    # להרצה מקומית/דמו. ב-Production נריץ עם Gunicorn מאחורי Nginx.
+    app.run(host="127.0.0.1", port=8000, debug=True)
+
