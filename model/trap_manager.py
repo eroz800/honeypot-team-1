@@ -6,6 +6,10 @@ from .ftp_trap import FTPTrap
 from .ssh_trap import SshTrap
 from .admin_panel_trap import AdminPanelTrap
 from .phishing_trap import PhishingTrap 
+from .ransomware_trap import RansomwareTrap
+from .open_ports_trap import OpenPortsTrap
+from .iot_router_trap import IotRouterTrap
+
 
 class TrapManager:
     def __init__(self):
@@ -16,6 +20,10 @@ class TrapManager:
         self._traps["ssh"]  = SshTrap()
         self._traps["admin_panel"] = AdminPanelTrap()
         self._traps["phishing"] = PhishingTrap()
+        self._traps["ransomware"] = RansomwareTrap()
+        self._traps["open_ports"] = OpenPortsTrap()
+        self._traps["iot_router"] = IotRouterTrap()
+
 
     def get_trap(self, name: str):
         return self._traps.get(name)

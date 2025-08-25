@@ -50,8 +50,8 @@ def home():
 # ---------- Dashboard / Static ----------
 @app.route("/dashboard")
 def dashboard():
-    with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
-        return render_template_string(f.read())
+    return send_from_directory(str(BASE_DIR / "view"), "dashboard.html")
+
 
 
 @app.route("/report")
