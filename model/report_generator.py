@@ -3,6 +3,8 @@ import html
 import ast
 import json
 from collections import Counter
+from typing import Dict, Any, List, Tuple, Optional
+
 
 
 def _mask_password(p: str) -> str:
@@ -102,61 +104,9 @@ def _looks_like_csv(line: str) -> bool:
 
 
 def generate_report():
-    base_dir = Path(__file__).resolve().parents[1]
-    log_path = base_dir / "logs" / "honeypot.log"
+    # נקרא לדאטה מובנה (כולל rows + stats)
+    data = generate_report_data()  
 
-    if not log_path.exists():
-        raise FileNotFoundError("לא נמצא קובץ לוג")
-
-    with log_path.open("r", encoding="utf-8") as f:
-        log_lines = f.readlines()
-
-    rows = []
-    trap_counter = Counter()
-    seen_inputs = {}
-
-    for raw in log_lines:
-        line = raw.strip()
-        if not line:
-            continue
-
-        try:
-            if line.startswith("[") and "]" in line and " from " in line and ": " in line:
-                timestamp = line[1:20]
-                rest = line[line.index("]") + 2:].strip()
-                trap_type, after_type = rest.split(" from ", 1)
-                ip, input_data = after_type.split(": ", 1)
-
-            elif _looks_like_csv(line):
-                parts = [p.strip() for p in line.split(", ", 3)]
-                if len(parts) < 4:
-                    continue
-                timestamp, trap_type, ip, input_data = parts[0], parts[1], parts[2], parts[3]
-
-            else:
-                continue
-
-            trap_counter[trap_type] += 1
-
-            # מנגנון לכפילויות
-            key = (trap_type, ip, input_data)
-            if key in seen_inputs:
-                idx = seen_inputs[key]
-                ts0, trap0, ip0, inp0 = rows[idx]
-                if "(x" in inp0:
-                    base, num = inp0.rsplit("(x", 1)
-                    num = int(num.strip(")")) + 1
-                    rows[idx] = (ts0, trap0, ip0, f"{base.strip()} (x{num})")
-                else:
-                    rows[idx] = (ts0, trap0, ip0, f"{inp0} (x2)")
-            else:
-                seen_inputs[key] = len(rows)
-                rows.append((timestamp, trap_type, ip, input_data))
-
-        except Exception:
-            continue
-
-    # בונים HTML
     html_lines = [
         "<html>",
         "<head><title>Honeypot Report</title>",
@@ -174,7 +124,7 @@ def generate_report():
 
     # סטטיסטיקות
     html_lines.append("<div class='stats'><h2>Summary Stats</h2><ul>")
-    for trap, count in trap_counter.items():
+    for trap, count in data.get("stats", {}).items():
         html_lines.append(f"<li>{_trap_icon(trap)} {trap}: <b>{count}</b></li>")
     html_lines.append("</ul></div>")
 
@@ -182,23 +132,17 @@ def generate_report():
     html_lines.append("<table class='report-table'>")
     html_lines.append("<tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>")
 
-    for ts, trap, ip, input_data in rows:
-        # נוסיף תמיכה ב־raw_input
-        if isinstance(input_data, dict) and "raw_input" in input_data:
-            display_input = input_data.get("input") or input_data["raw_input"]
-        else:
-            display_input = input_data
-
-        pretty_input = _format_input(trap, display_input)
+    for row in data.get("rows", []):
         html_lines.append(
-            f"<tr><td>{html.escape(str(ts))}</td>"
-            f"<td>{_trap_icon(trap)} {html.escape(str(trap))}</td>"
-            f"<td>{html.escape(str(ip))}</td>"
-            f"<td>{pretty_input}</td></tr>"
+            f"<tr><td>{html.escape(str(row['timestamp']))}</td>"
+            f"<td>{row['icon']} {html.escape(str(row['trap']))}</td>"
+            f"<td>{html.escape(str(row['ip']))}</td>"
+            f"<td>{row['input_pretty']}</td></tr>"
         )
 
     html_lines.extend(["</table>", "</body>", "</html>"])
 
+    base_dir = Path(__file__).resolve().parents[1]
     reports_dir = base_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
     out_path = reports_dir / "summary.html"
@@ -207,3 +151,87 @@ def generate_report():
 
     print(f"✅ Report generated at {out_path}")
     return out_path
+
+
+
+
+
+def generate_report_data(filter_trap: Optional[str] = None) -> Dict[str, Any]:
+    base_dir = Path(__file__).resolve().parents[1]
+    log_path = base_dir / "logs" / "honeypot.log"
+
+    if not log_path.exists():
+        return {"rows": [], "stats": {}, "error": "log_not_found"}
+
+    with log_path.open("r", encoding="utf-8") as f:
+        log_lines = f.readlines()
+
+    rows: List[Tuple[str, str, str, Any]] = []
+    trap_counter: Counter = Counter()
+    seen_inputs: dict = {}
+
+    def add_row(ts, trap, ip, input_data):
+        # סינון לפי trap_type אם התבקש
+        if filter_trap and trap.lower() != filter_trap.lower():
+            return
+
+        trap_counter[trap] += 1
+
+        key = (trap, ip, input_data)
+        if key in seen_inputs:
+            idx = seen_inputs[key]
+            ts0, trap0, ip0, inp0 = rows[idx]
+            if isinstance(inp0, str) and "(x" in inp0:
+                base, num = inp0.rsplit("(x", 1)
+                try:
+                    num = int(num.strip(")")) + 1
+                except Exception:
+                    num = 2
+                rows[idx] = (ts0, trap0, ip0, f"{base.strip()} (x{num})")
+            else:
+                rows[idx] = (ts0, trap0, ip0, f"{inp0} (x2)")
+        else:
+            seen_inputs[key] = len(rows)
+            rows.append((ts, trap, ip, input_data))
+
+    for raw in log_lines:
+        line = raw.strip()
+        if not line:
+            continue
+
+        try:
+            if line.startswith("[") and "]" in line and " from " in line and ": " in line:
+                timestamp = line[1:20]
+                rest = line[line.index("]") + 2:].strip()
+                trap_type, after_type = rest.split(" from ", 1)
+                ip, input_data = after_type.split(": ", 1)
+                add_row(timestamp, trap_type, ip, input_data)
+
+            elif _looks_like_csv(line):
+                parts = [p.strip() for p in line.split(", ", 3)]
+                if len(parts) < 4:
+                    continue
+                timestamp, trap_type, ip, input_data = parts[0], parts[1], parts[2], parts[3]
+                add_row(timestamp, trap_type, ip, input_data)
+
+            else:
+                continue
+
+        except Exception:
+            continue
+
+    # הפורמט שיוחזר כ-JSON
+    return {
+        "stats": dict(trap_counter),
+        "rows": [
+            {
+                "timestamp": ts,
+                "trap": trap,
+                "ip": ip,
+                "input_raw": input_data,
+                "input_pretty": _format_input(trap, input_data if not (isinstance(input_data, dict) and "raw_input" in input_data) else (input_data.get("input") or input_data["raw_input"])),
+                "icon": _trap_icon(trap),
+            }
+            for (ts, trap, ip, input_data) in rows
+        ],
+    }

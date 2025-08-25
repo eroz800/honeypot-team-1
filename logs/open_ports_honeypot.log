@@ -12,3 +12,4 @@
 2025-08-21T11:18:34.620324Z | protocol=TCP | type=open_ports | ip=127.0.0.1 | input="{}" | banner="Fake Open Port Service Banner"
 2025-08-21T11:19:13.682821Z | protocol=TCP | type=open_ports | ip=127.0.0.1 | input="Port: 24" | banner="Fake Open Port Service Banner"
 2025-08-21T11:45:00.130127Z | protocol=TCP | type=open_ports | ip=127.0.0.1 | input="Port: 24" | banner="Fake Open Port Service Banner"
+2025-08-25T09:16:25.372431Z | protocol=TCP | type=open_ports | ip=127.0.0.1 | input="Port: 22" | banner="Fake Open Port Service Banner"

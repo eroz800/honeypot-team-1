@@ -3,6 +3,8 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, send_file
 from pathlib import Path
 import sys, os
+from model.report_generator import generate_report, generate_report_data
+
 
 # --- הגדרות בסיס ---
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -66,6 +68,17 @@ def show_report():
 @app.route("/summary")
 def summary():
     return show_report()   # מצביע על הפונקציה שכבר מחזירה את הדוח
+
+@app.route("/summary.json")
+def summary_json():
+    trap = request.args.get("trap_type")  # יכול להיות None
+    try:
+        data = generate_report_data(filter_trap=trap)
+        return jsonify({"ok": True, "data": data})
+    except FileNotFoundError:
+        return jsonify({"ok": False, "error": "log_not_found", "data": {"rows": [], "stats": {}}}), 404
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 
 @app.route("/style.css")
@@ -171,4 +184,4 @@ def simulate():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=80, debug=True)

@@ -47,6 +47,40 @@
 </p>
 
   </section>
+  <section class="live-section">
+    <h2>Live Summary</h2>
+
+    <div class="filters">
+      <label for="filter_trap">Filter by trap_type:</label>
+      <select id="filter_trap">
+        <option value="">(all)</option>
+        <option value="ssh">ssh</option>
+        <option value="http">http</option>
+        <option value="ftp">ftp</option>
+        <option value="phishing">phishing</option>
+        <option value="admin_panel">admin_panel</option>
+        <option value="open_ports">open_ports</option>
+        <option value="ransomware">ransomware</option>
+        <option value="iot_router">iot_router</option>
+      </select>
+      <span id="last_updated" style="margin-left:10px;font-size:0.9em;opacity:0.7;"></span>
+    </div>
+
+    <div class="stats" id="stats_box"></div>
+
+    <table class="report-table" id="live_table" style="margin-top:10px;width:100%;">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Trap</th>
+          <th>IP</th>
+          <th>Input</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
 
   <script>
     document.getElementById("simulate-form").addEventListener("submit", async (e) => {
@@ -68,10 +102,78 @@
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ ip, trap_type, input })
   });
-
   const data = await res.json();
   document.getElementById("result").textContent = JSON.stringify(data, null, 2);
 });
+
+// --- Live summary polling ---
+const filterSelect = document.getElementById("filter_trap");
+const liveTableBody = document.querySelector("#live_table tbody");
+const statsBox = document.getElementById("stats_box");
+const lastUpdated = document.getElementById("last_updated");
+
+async function loadSummary() {
+  const trap = filterSelect.value.trim();
+  const url = trap ? `/summary.json?trap_type=${encodeURIComponent(trap)}` : "/summary.json";
+  try {
+    const res = await fetch(url);
+    const payload = await res.json();
+    if (!payload.ok) throw new Error(payload.error || "unknown error");
+
+    const { stats, rows } = payload.data;
+
+    // render stats
+    statsBox.innerHTML = "";
+    const entries = Object.entries(stats || {});
+    if (entries.length) {
+      const list = document.createElement("ul");
+      for (const [trapType, count] of entries) {
+        const li = document.createElement("li");
+        li.textContent = `${trapType}: ${count}`;
+        list.appendChild(li);
+      }
+      statsBox.appendChild(list);
+    } else {
+      statsBox.textContent = "(no data)";
+    }
+
+    // render table
+    liveTableBody.innerHTML = "";
+    for (const r of (rows || [])) {
+      const tr = document.createElement("tr");
+
+      const tdTs = document.createElement("td");
+      tdTs.textContent = r.timestamp || "";
+      tr.appendChild(tdTs);
+
+      const tdTrap = document.createElement("td");
+      tdTrap.textContent = `${r.icon ? "" : ""} ${r.trap}`;
+      tr.appendChild(tdTrap);
+
+      const tdIp = document.createElement("td");
+      tdIp.textContent = r.ip || "";
+      tr.appendChild(tdIp);
+
+      const tdIn = document.createElement("td");
+      tdIn.innerHTML = r.input_pretty || "";
+      tr.appendChild(tdIn);
+
+      liveTableBody.appendChild(tr);
+    }
+
+    const now = new Date();
+    lastUpdated.textContent = `Last update: ${now.toLocaleTimeString()}`;
+  } catch (err) {
+    statsBox.textContent = `Error: ${err.message}`;
+  }
+}
+
+// רענון ראשוני + כל 10 שניות
+loadSummary();
+setInterval(loadSummary, 10000);
+// שינוי פילטר מרענן מיידית
+filterSelect.addEventListener("change", loadSummary);
+
 
   </script>
 </body>

@@ -99,3 +99,4 @@
 2025-08-21T21:15:45.009110Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:invoice_2025.pdf -> invoice_2025.pdf.locked"
 2025-08-21T21:15:45.009769Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="lock:resume.docx -> resume.docx.locked"
 2025-08-21T21:15:45.011159Z | protocol=FILE | type=ransomware | ip=10.0.0.9 | action="summary: changed=4 note=README.txt"
+2025-08-25T09:17:05.475636Z | protocol=FILE | type=ransomware | ip=127.0.0.1 | action="summary: changed=0 note=README.txt"
