@@ -1,4 +1,3 @@
-# model/trap_manager.py
 from typing import Dict, Any
 import time
 from .http_trap import HTTPTrap
@@ -6,6 +5,7 @@ from .ftp_trap import FTPTrap
 from .ssh_trap import SshTrap
 from .admin_panel_trap import AdminPanelTrap
 from .phishing_trap import PhishingTrap 
+from .open_ports_trap import OpenPortsTrap   # <--- חדש
 
 class TrapManager:
     def __init__(self):
@@ -16,6 +16,7 @@ class TrapManager:
         self._traps["ssh"]  = SshTrap()
         self._traps["admin_panel"] = AdminPanelTrap()
         self._traps["phishing"] = PhishingTrap()
+        self._traps["open_ports"] = OpenPortsTrap()   # <--- חדש
 
     def get_trap(self, name: str):
         return self._traps.get(name)
@@ -27,9 +28,6 @@ class TrapManager:
         if not hasattr(trap_obj, "simulate_interaction"):
             raise TypeError("trap_obj must implement simulate_interaction")
         self._traps[trap_type] = trap_obj
-
-
-    
 
     def run_trap(self, trap_type: str, input_data: Any, ip: str) -> dict:
         trap = self._traps.get(trap_type)

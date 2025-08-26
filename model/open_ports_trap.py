@@ -5,59 +5,144 @@ from pathlib import Path
 import time
 import json
 import ast
+from typing import Any, Dict, Tuple
 from .trap import Trap
+
+# מיפוי באנרים לפי פורטים נפוצים (לניחוש השירות)
+BANNERS: Dict[int, str] = {
+    21:   "220 FTP Service Ready",
+    22:   "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3",
+    80:   "HTTP/1.1 200 OK",
+    443:  "HTTP/1.1 200 OK (TLS handshake simulated)",
+    3306: "5.7.36-MySQL Community Server (GPL)",
+}
 
 class OpenPortsTrap(Trap):
     """
-    Trap שמדמה שירות פתוח (TCP) ומחזיר Banner, עם רישום לוג.
+    מלכודת פורטים פתוחים (TCP):
+    - קולטת פורט ממגוון פורמטים (int/str/JSON/dict)
+    - מחזירה באנר קבוע (כפי שהטסטים מצפים) + ניחוש שירות לפי הפורט
+    - מזהה nmap לפי הטקסט הגולמי
+    - רושמת אינטראקציה ללוג
     """
-    name = "open_ports"  
+    name = "open_ports"
 
+    # --- מזהה פרוטוקול/סוג ---
     def get_protocol(self) -> str:
         return "TCP"
 
     def get_type(self) -> str:
         return "open_ports"
 
-    def simulate_interaction(self, input_data, ip: str):
+    # --- נקודת הכניסה העיקרית ---
+    def simulate_interaction(self, input_data: Any, ip: str) -> Dict[str, Any]:
+        # חילוץ הפורט וטקסט גולמי לזיהוי nmap
+        port, raw_str = self._extract_port_and_raw(input_data)
+
+        # הבאנר שהטסטים מצפים לו (קבוע)
         banner = "Fake Open Port Service Banner"
 
-        # --- ניתוח input ---
-        parsed = None
-        pretty_input = None
-        if isinstance(input_data, dict):
-            parsed = input_data
-        elif isinstance(input_data, str):
-            try:
-                parsed = ast.literal_eval(input_data)
-            except Exception:
-                try:
-                    parsed = json.loads(input_data)
-                except Exception:
-                    parsed = None
+        # ניחוש שירות לפי פורט (נשמר בשדה נפרד – לא שובר טסטים)
+        service_guess = BANNERS.get(port, "unknown")
 
-        if isinstance(parsed, dict) and "port" in parsed:
-            pretty_input = f"Port: {parsed['port']}"
-        else:
-            pretty_input = str(input_data).strip()
+        # זיהוי nmap
+        nmap_detected = self._looks_like_nmap(raw_str)
 
-        # לוג
+        # לוג נפרד אם זוהה nmap
+        if nmap_detected:
+            self._append_log_line(
+                self._format_log(ip=ip, input_data=f"port={port} (nmap detected)", banner="detected nmap scan")
+            )
+
+        # לוג רגיל
+        pretty_input = f"Port: {port}" if port else (str(input_data).strip())
         self._append_log_line(self._format_log(ip=ip, input_data=pretty_input, banner=banner))
 
-        # נחזיר גם raw וגם קריא
+        # תשובה ל-UI/בדיקות
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
             "ip": ip,
             "input": pretty_input,
-            "raw_input": input_data,   # נשמור גם את המקור למקרה הצורך
+            "raw_input": input_data,   # שקיפות – המקור
             "timestamp": int(time.time()),
-            "data": {"banner": banner}
+            "data": {
+                "port": port,
+                "banner": banner,               # קבוע – לשמירת תאימות לטסטים
+                "service_guess": service_guess, # מייצג את המיפוי לפי הפורט
+                "nmap_detected": nmap_detected,
+            }
         }
 
-    def run(self, input_data, ip: str):
+    # תאימות ל-TrapManager
+    def run(self, input_data: Any, ip: str):
         return self.simulate_interaction(input_data, ip)
 
+    # --- עזר: חילוץ פורט מהקלט במגוון צורות ---
+    def _extract_port_and_raw(self, input_data: Any) -> Tuple[int, str]:
+        """
+        תומך ב:
+          - מספר: 22
+          - מחרוזת: "22" / "scan 22" / "nmap -sV 22" / '{"port": 80}'
+          - dict/JSON: {"port": 22} או {"port": "22"}
+        מחזיר: (port:int, raw_str:str)
+        """
+        # dict
+        if isinstance(input_data, dict):
+            p = input_data.get("port")
+            try:
+                return int(p), str(input_data)
+            except Exception:
+                return 0, str(input_data)
+
+        # מספר
+        if isinstance(input_data, int):
+            return input_data, str(input_data)
+
+        # מחרוזת
+        if isinstance(input_data, str):
+            raw = input_data
+
+            # נסה JSON
+            try:
+                obj = json.loads(raw)
+                if isinstance(obj, dict) and "port" in obj:
+                    return int(obj["port"]), raw
+            except Exception:
+                pass
+
+            # נסה literal_eval
+            try:
+                obj = ast.literal_eval(raw)
+                if isinstance(obj, dict) and "port" in obj:
+                    return int(obj["port"]), raw
+            except Exception:
+                pass
+
+            # שלוף מספר ראשון מהטקסט (למשל "scan 22")
+            tokens = [t for t in raw.replace("/", " ").split() if t.isdigit()]
+            if tokens:
+                try:
+                    return int(tokens[0]), raw
+                except Exception:
+                    pass
+
+            # נסה המרה ישירה
+            try:
+                return int(raw.strip()), raw
+            except Exception:
+                return 0, raw
+
+        # ברירת מחדל
+        return 0, str(input_data)
+
+    # --- עזר: זיהוי nmap ---
+    def _looks_like_nmap(self, raw: str) -> bool:
+        raw = (raw or "").lower()
+        indicators = ["nmap", "-sv", "--version", "-ss", "-p "]
+        return any(k in raw for k in indicators)
+
+    # --- עזרי לוג ---
     def _format_log(self, ip: str, input_data: str, banner: str) -> str:
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         input_data = (input_data or "").replace("\n", "\\n")[:200]
@@ -74,5 +159,5 @@ if __name__ == "__main__":
     t = OpenPortsTrap()
     print(t.run({"port": 22}, "127.0.0.1"))
     print(t.run('{"port": 80}', "127.0.0.1"))
-    print(t.run("ping test", "127.0.0.1"))
-
+    print(t.run("nmap -sV 443", "127.0.0.1"))
+    print(t.run("9999", "127.0.0.1"))
