@@ -58,56 +58,48 @@ def _format_input(trap_type: str, input_data: str) -> str:
 
     return html.escape(text)
 
-def _trap_icon(trap_type: str) -> str:
-    mapping = {
-        "ssh": "🔒",
-        "ftp": "📁",
-        "http": "🌐",
-        "admin_panel": "🛠️",
-        "phishing": "🎭",
-        "open_ports": "🔍",
-        "ransomware": "💀",
-        "iot_router": "📡",
-    }
-    return mapping.get(trap_type.lower(), "❓")
-
 def generate_report():
     base_dir = Path(__file__).resolve().parents[1]
     reports_dir = base_dir / "reports"
     reports_dir.mkdir(exist_ok=True)
 
-    log_path = Path(get_log_path())
-    if not log_path.exists():
-        raise FileNotFoundError("לא נמצא קובץ לוג")
-
+    # Aggregate logs from all relevant trap log files
+    log_files = [
+        base_dir / "logs" / "http_honeypot.log",
+        base_dir / "logs" / "ftp_honeypot.log",
+        base_dir / "logs" / "ssh_honeypot.log",
+        base_dir / "logs" / "open_ports_honeypot.log",
+    ]
     rows = []
     trap_counter = Counter()
     seen_inputs = {}
 
-    with log_path.open("r", encoding="utf-8") as f:
-        for raw in f:
-            line = raw.strip()
-            if not line:
-                continue
-            parts = [p.strip() for p in line.split(",", 3)]
-            if len(parts) < 4:
-                continue
-            ts, trap, ip, inp = parts
-            trap_counter[trap] += 1
-
-            key = (trap, ip, inp)
-            if key in seen_inputs:
-                idx = seen_inputs[key]
-                ts0, trap0, ip0, inp0 = rows[idx]
-                if "(x" in inp0:
-                    base, num = inp0.rsplit("(x", 1)
-                    num = int(num.strip(")")) + 1
-                    rows[idx] = (ts0, trap0, ip0, f"{base.strip()} (x{num})")
+    for log_path in log_files:
+        if not log_path.exists():
+            continue
+        with log_path.open("r", encoding="utf-8") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line:
+                    continue
+                parts = [p.strip() for p in line.split(",", 3)]
+                if len(parts) < 4:
+                    continue
+                ts, trap, ip, inp = parts
+                trap_counter[trap] += 1
+                key = (trap, ip, inp)
+                if key in seen_inputs:
+                    idx = seen_inputs[key]
+                    ts0, trap0, ip0, inp0 = rows[idx]
+                    if "(x" in inp0:
+                        base, num = inp0.rsplit("(x", 1)
+                        num = int(num.strip(")")) + 1
+                        rows[idx] = (ts0, trap0, ip0, f"{base.strip()} (x{num})")
+                    else:
+                        rows[idx] = (ts0, trap0, ip0, f"{inp0} (x2)")
                 else:
-                    rows[idx] = (ts0, trap0, ip0, f"{inp0} (x2)")
-            else:
-                seen_inputs[key] = len(rows)
-                rows.append((ts, trap, ip, inp))
+                    seen_inputs[key] = len(rows)
+                    rows.append((ts, trap, ip, inp))
 
     # HTML
     style = """
@@ -137,12 +129,11 @@ def generate_report():
 
     html_lines.append("<table><tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>")
     for ts, trap, ip, inp in rows[::-1]:
-        pretty_input = _format_input(trap, inp)
         html_lines.append(
             f"<tr><td>{html.escape(ts)}</td>"
             f"<td>{_trap_icon(trap)} {html.escape(trap)}</td>"
             f"<td>{html.escape(ip)}</td>"
-            f"<td>{pretty_input}</td></tr>"
+            f"<td>{html.escape(inp)}</td></tr>"
         )
     html_lines.append("</table></body></html>")
 
@@ -150,6 +141,18 @@ def generate_report():
     out_path.write_text("\n".join(html_lines), encoding="utf-8")
     print(f"✅ Report generated at {out_path}")
     return out_path
+
+def _trap_icon(trap_type: str) -> str:
+    mapping = {
+        "http": "🌐",
+        "ftp": "📁",
+        "ssh": "🔑",
+        "open_ports": "🛡️",
+        "admin_panel": "🛠️",
+        "phishing": "🎣",
+        "iot_router": "📡",
+    }
+    return mapping.get(trap_type.lower(), "❓")
 
 if __name__ == "__main__":
     generate_report()

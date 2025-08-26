@@ -14,11 +14,17 @@
 </head><body>
 <h1>📊 Honeypot Activity Summary</h1>
 <div class='stats'><h2>Summary Stats</h2><ul>
-<li>🛠️ admin_panel: <b>1</b></li>
-<li>🔒 ssh: <b>3</b></li>
+<li>🌐 http: <b>2</b></li>
+<li>📁 ftp: <b>2</b></li>
+<li>🔑 ssh: <b>1</b></li>
+<li>🛡️ open_ports: <b>2</b></li>
 </ul></div>
 <table><tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
-<tr><td>2025-08-24 12:04:31</td><td>🔒 ssh</td><td>127.0.0.1</td><td>whoami (x2)</td></tr>
-<tr><td>2025-08-23 16:01:48</td><td>🔒 ssh</td><td>89.139.53.17</td><td>test from week 4</td></tr>
-<tr><td>2025-08-22 00:16:35</td><td>🛠️ admin_panel</td><td>127.0.0.1</td><td>{}</td></tr>
+<tr><td>2025-08-26T10:44:52.184006Z</td><td>🛡️ open_ports</td><td>7.7.7.7</td><td>&quot;Port: 9999&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.183176Z</td><td>🛡️ open_ports</td><td>6.6.6.6</td><td>&quot;Port: 22&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.182815Z</td><td>🔑 ssh</td><td>5.5.5.5</td><td>&quot;ls -la /root&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.181461Z</td><td>📁 ftp</td><td>4.4.4.4</td><td>&quot;LIST&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.180627Z</td><td>📁 ftp</td><td>3.3.3.3</td><td>&quot;USER anonymous&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.179812Z</td><td>🌐 http</td><td>2.2.2.2</td><td>&quot;POST /login user=admin&amp;pass=123456&quot;</td></tr>
+<tr><td>2025-08-26T10:44:52.178958Z</td><td>🌐 http</td><td>1.2.3.4</td><td>&quot;GET /&quot;</td></tr>
 </table></body></html>

@@ -11,7 +11,15 @@ class SshTrap(Trap):
         return "ssh"
 
     def simulate_interaction(self, input_data: str, ip: str) -> dict:
-        log_interaction(self.get_type(), ip, input_data)  # ← כתיבה ללוג
+        # Write to per-trap log file in CSV format
+        from datetime import datetime, UTC
+        from pathlib import Path
+        logs_dir = Path(__file__).resolve().parents[1] / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+        log_line = f'{ts},ssh,{ip},"{input_data}"\n'
+        with (logs_dir / "ssh_honeypot.log").open("a", encoding="utf-8") as f:
+            f.write(log_line)
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
@@ -19,6 +27,7 @@ class SshTrap(Trap):
             "input": input_data,
             "timestamp": int(time.time()),
             "data": {
-                "message": "interaction logged"
+                "message": "interaction logged",
+                "log": log_line
             }
         }

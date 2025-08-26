@@ -53,12 +53,13 @@ class FTPTrap(Trap):
 
     # --- עזר לשמירת לוגים ---
     def _format_log(self, command: str, ip: str) -> str:
+        from datetime import datetime, UTC
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
-        command_preview = command.replace("\n", "\\n")[:200]
-        return (f'{ts} | protocol=FTP | type=ftp | ip={ip} | '
-                f'command="{command_preview}"\n')
+        # Write as CSV: timestamp, trap_type, ip, input_data
+        return f'{ts},ftp,{ip},"{command}"\n'
 
     def _append_log_line(self, line: str) -> None:
         logs_dir = Path(__file__).resolve().parents[1] / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
-        (logs_dir / "ftp_honeypot.log").open("a", encoding="utf-8").write(line)
+        with (logs_dir / "ftp_honeypot.log").open("a", encoding="utf-8") as f:
+            f.write(line)

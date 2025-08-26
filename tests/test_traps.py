@@ -4,6 +4,7 @@ import pytest
 from model.phishing_trap import PhishingTrap
 from pathlib import Path
 from model.trap_manager import TrapManager
+from model.open_ports_trap import OpenPortsTrap
 
 
 @pytest.fixture
@@ -125,7 +126,9 @@ def test_ssh_returns_wrapped_dict(manager, capsys):
     assert res["protocol"] == "SSH"
    
     captured = capsys.readouterr()
-    assert "[SSH] Interaction from" in captured.out
+    assert "ssh" in captured.out
+    assert ip in captured.out
+    assert inp in captured.out
     # ה-data כולל את הלוג
     assert "log" in res["data"] and "Interaction from" in res["data"]["log"]
 
@@ -176,3 +179,23 @@ def test_phishing_trap_missing_data():
     content = LOG_PATH.read_text()
     # לא אמור להישמר משתמש ריק
     assert "username': ''" not in content
+
+
+# ---------- OpenPortsTrap ----------
+
+@pytest.fixture
+def trap():
+    return OpenPortsTrap()
+
+def test_known_port_recognized(trap):
+    # Known port (e.g., 22)
+    result = trap.simulate_interaction({"port": 22}, "127.0.0.1")
+    assert result["data"]["port"] == 22
+    assert result["data"]["service_guess"] != "unknown"
+    assert "SSH" in result["data"]["service_guess"] or "FTP" in result["data"]["service_guess"] or "HTTP" in result["data"]["service_guess"]
+
+def test_unknown_port_flagged(trap):
+    # Unknown port (e.g., 9999)
+    result = trap.simulate_interaction({"port": 9999}, "127.0.0.1")
+    assert result["data"]["port"] == 9999
+    assert result["data"]["service_guess"] == "unknown"

@@ -144,10 +144,10 @@ class OpenPortsTrap(Trap):
 
     # --- עזרי לוג ---
     def _format_log(self, ip: str, input_data: str, banner: str) -> str:
+        from datetime import datetime, UTC
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
-        input_data = (input_data or "").replace("\n", "\\n")[:200]
-        return (f'{ts} | protocol=TCP | type=open_ports | ip={ip} | '
-                f'input="{input_data}" | banner="{banner}"\n')
+        # Write as CSV: timestamp, trap_type, ip, input_data
+        return f'{ts},open_ports,{ip},"{input_data}"\n'
 
     def _append_log_line(self, line: str) -> None:
         logs_dir = Path(__file__).resolve().parents[1] / "logs"

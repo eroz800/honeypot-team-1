@@ -89,13 +89,14 @@ class HTTPTrap(Trap):
 
     def _format_log(self, method: str, path: str, status: int, ip: str, body: str) -> str:
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
-        body_preview = body.replace("\n", "\\n")[:200]
-        return (f'{ts} | protocol=HTTP | type=http | ip={ip} | '
-                f'method={method} | path={path} | status={status} | body="{body_preview}"\n')
+        # Write as CSV: timestamp, trap_type, ip, input_data
+        input_data = f"{method} {path}" if not body else f"{method} {path} {body}"
+        return f'{ts},http,{ip},"{input_data}"\n'
 
     def _append_log_line(self, line: str) -> None:
         logs_dir = Path(__file__).resolve().parents[1] / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
-        (logs_dir / "http_honeypot.log").open("a", encoding="utf-8").write(line)
+        with (logs_dir / "http_honeypot.log").open("a", encoding="utf-8") as f:
+            f.write(line)
 
 
