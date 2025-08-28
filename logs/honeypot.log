@@ -1,1 +1,2 @@
 2025-08-26T10:34:07Z, ssh, 5.5.5.5, ls -la /root
+2025-08-28T12:53:47Z, ftp, 127.0.0.1, {"username": "test", "password": "test123"}

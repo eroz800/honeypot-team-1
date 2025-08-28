@@ -1,0 +1,29 @@
+services:
+  ftp:
+    build:
+      context: .
+      dockerfile: controller/Dockerfile.ftp
+    ports:
+      - "2121:2121"
+      - "60000-60009:60000-60009"
+    volumes:
+      - ./logs:/app/logs
+      - ./controller/ftp_root:/app/ftp_root
+
+  api:
+    build:
+      context: .
+      dockerfile: controller/Dockerfile.api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logs:/app/logs
+
+  aws_listener:
+    build:
+      context: .
+      dockerfile: controller/Dockerfile.aws
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs

@@ -29,3 +29,15 @@
 2025-08-09 20:33:16,866 INFO 127.0.0.1:64569-[user] CWD C:\Users\Eric\OneDrive - Holon Institute of Technology\\u05de\u05e1\u05de\u05db\u05d9\u05dd\GitHub\honeypot-team-1\controller\ftp_root 250
 2025-08-09 20:33:27,871 INFO 127.0.0.1:64569-[user] FTP session closed (disconnect).
 2025-08-09 20:33:27,872 INFO Disconnected 127.0.0.1:64569 - User: user
+2025-08-28 12:57:56,369 INFO concurrency model: async
+2025-08-28 12:57:56,370 INFO masquerade (NAT) address: None
+2025-08-28 12:57:56,370 INFO passive ports: 60000->60009
+2025-08-28 12:57:56,370 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-28 13:02:48,651 INFO concurrency model: async
+2025-08-28 13:02:48,652 INFO masquerade (NAT) address: None
+2025-08-28 13:02:48,652 INFO passive ports: 60000->60009
+2025-08-28 13:02:48,652 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-28 13:05:12,433 INFO concurrency model: async
+2025-08-28 13:05:12,434 INFO masquerade (NAT) address: None
+2025-08-28 13:05:12,434 INFO passive ports: 60000->60009
+2025-08-28 13:05:12,435 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<

@@ -1,6 +1,9 @@
 # controller/aws_listener.py
 from flask import Flask, request, jsonify, Request
 from model.trap_manager import TrapManager
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
 app = Flask(__name__)
 trap_manager = TrapManager()

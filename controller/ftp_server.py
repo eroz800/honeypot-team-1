@@ -5,7 +5,7 @@ from pyftpdlib.servers import FTPServer
 import os
 
 # Define the log file path
-LOG_FILE = '../logs/ftp_logs.txt'  # Updated log file path
+LOG_FILE = 'logs/ftp_logs.txt'  # Updated log file path
 
 # Set up logging
 logging.basicConfig(

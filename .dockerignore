@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+logs/
+ftp_root/
+.env
+.git
+.vscode/
+tests/
