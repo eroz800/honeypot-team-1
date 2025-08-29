@@ -117,20 +117,27 @@ def test_ftp_unknown_command(manager):
 
 # ---------- SshTrap ----------
 
-def test_ssh_returns_wrapped_dict(manager, capsys):
+def test_ssh_returns_wrapped_dict(manager):
     ip = "192.168.1.30"
     inp = "ls -la /root"
     res = manager.run_trap("ssh", input_data=inp, ip=ip)
+
+    # בדיקות כלליות
     _assert_common(res, "ssh", ip, inp)
+
     # פרוטוקול מהטראפ
     assert res["protocol"] == "SSH"
-   
-    captured = capsys.readouterr()
-    assert "ssh" in captured.out
-    assert ip in captured.out
-    assert inp in captured.out
-    # ה-data כולל את הלוג
-    assert "log" in res["data"] and "Interaction from" in res["data"]["log"]
+
+    # בודקים שהתוצאה מכילה לוג בפורמט החדש (CSV)
+    assert "data" in res
+    assert "log" in res["data"]
+
+    log_line = res["data"]["log"]
+    assert "ssh" in log_line
+    assert ip in log_line
+    assert inp in log_line
+
+
 
 
 # ---------- בדיקות עקביות/מעטפת ----------
