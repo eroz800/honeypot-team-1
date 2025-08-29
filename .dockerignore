@@ -7,4 +7,4 @@ ftp_root/
 .env
 .git
 .vscode/
-tests/
+# tests/

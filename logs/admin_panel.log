@@ -1,2 +1,4 @@
 [AdminPanelTrap] 2025-08-27T21:18:05.707856 | IP: 127.0.0.1 | User: admin | Success: True
 [AdminPanelTrap] 2025-08-27T21:18:05.708466 | IP: 127.0.0.1 | User: admin | Success: False
+[AdminPanelTrap] 2025-08-29T13:02:02.310219 | IP: 172.18.0.1 | User: user | Success: False
+[AdminPanelTrap] 2025-08-29T13:02:30.864034 | IP: 172.18.0.1 | User: admin | Success: False

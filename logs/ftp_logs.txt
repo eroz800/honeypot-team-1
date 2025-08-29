@@ -41,3 +41,19 @@
 2025-08-28 13:05:12,434 INFO masquerade (NAT) address: None
 2025-08-28 13:05:12,434 INFO passive ports: 60000->60009
 2025-08-28 13:05:12,435 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-29 12:36:35,825 INFO concurrency model: async
+2025-08-29 12:36:35,826 INFO masquerade (NAT) address: None
+2025-08-29 12:36:35,827 INFO passive ports: 60000->60009
+2025-08-29 12:36:35,827 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-29 13:00:58,329 INFO concurrency model: async
+2025-08-29 13:00:58,330 INFO masquerade (NAT) address: None
+2025-08-29 13:00:58,331 INFO passive ports: 60000->60009
+2025-08-29 13:00:58,333 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-29 13:08:41,506 INFO concurrency model: async
+2025-08-29 13:08:41,506 INFO masquerade (NAT) address: None
+2025-08-29 13:08:41,507 INFO passive ports: 60000->60009
+2025-08-29 13:08:41,508 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-08-29 13:11:06,735 INFO concurrency model: async
+2025-08-29 13:11:06,736 INFO masquerade (NAT) address: None
+2025-08-29 13:11:06,737 INFO passive ports: 60000->60009
+2025-08-29 13:11:06,737 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
