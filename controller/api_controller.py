@@ -7,6 +7,9 @@ import sys, os, json, urllib.request
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BASE_DIR = Path(__file__).resolve().parents[1]
 
+# --- GeoIP (שימוש בקובץ MaxMind) ---
+from model.geoip_resolver import resolve_ip
+
 # --- יבוא טראפים ומנג'ר ---
 from model.trap_manager import TrapManager
 from model.open_ports_trap import OpenPortsTrap
@@ -148,27 +151,18 @@ def trap_iot_router():
 
 # --- helpers: נרמול שמות טראפים / כינויים ---
 _TRAP_ALIASES = {
-    # web
     "http": "http",
     "https": "http",
     "web": "http",
-
-    # ftp/ssh/phishing
     "ftp": "ftp",
     "ssh": "ssh",
     "phishing": "phishing",
-
-    # admin panel
     "admin": "admin_panel",
     "admin-panel": "admin_panel",
     "admin_panel": "admin_panel",
-
-    # open ports
     "open-ports": "open_ports",
     "open_ports": "open_ports",
     "open ports": "open_ports",
-
-    # iot router
     "iot": "iot_router",
     "router": "iot_router",
     "iot_router": "iot_router",
@@ -182,23 +176,16 @@ def _normalize_trap_name(name: str) -> str:
 @app.route("/simulate", methods=["POST"])
 def simulate():
     data = request.get_json(silent=True) or {}
-
-    # raw + normalized name
     trap_type_raw = str(data.get("trap_type", ""))
     trap_type = _normalize_trap_name(trap_type_raw)
-
-    # input יכול להגיע כמילון או כמחרוזת חופשית
     input_data = data.get("input", {}) or {}
     if isinstance(input_data, str):
         input_data = {"raw": input_data}
-
     ip = data.get("ip") or request.headers.get("X-Forwarded-For", request.remote_addr)
-
     if not trap_type:
         return jsonify({"error": "Missing trap_type"}), 400
     if not ip:
         return jsonify({"error": "Missing ip"}), 400
-
     try:
         result = manager.run_trap(trap_type, input_data, ip)
         if log_interaction:
@@ -207,9 +194,7 @@ def simulate():
             except Exception:
                 pass
         return jsonify(result), 200
-
     except KeyError:
-        # מוסיף רשימת טראפים זמינים לעזרה בדיבאג
         try:
             available = sorted(list(getattr(manager, "_traps", {}).keys()))
         except Exception:
@@ -219,35 +204,14 @@ def simulate():
             "normalized": trap_type,
             "available_traps": available,
         }), 404
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ---------- GeoIP (שלב 8) ----------
-@app.route("/geoip", methods=["GET"])
-def geoip():
-    ip = (request.args.get("ip") or "").strip()
-    if not ip:
-        return jsonify({"error": "missing ip"}), 400
-    try:
-        url = f"https://ipapi.co/{ip}/json/"
-        with urllib.request.urlopen(url, timeout=5) as resp:
-            data = json.loads(resp.read().decode("utf-8", errors="ignore"))
+# ---------- GeoIP (מבוסס MaxMind) ----------
+@app.route("/geoip/<ip>", methods=["GET"])
+def geoip_lookup(ip):
+    return jsonify(resolve_ip(ip))
 
-        out = {
-            "ip": ip,
-            "city": data.get("city"),
-            "region": data.get("region"),
-            "country": data.get("country_name") or data.get("country"),
-            "latitude": data.get("latitude"),
-            "longitude": data.get("longitude"),
-            "org": data.get("org") or data.get("asn"),
-        }
-        return jsonify(out), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 502
-
-
+# ---------- Run app ----------
 if __name__ == "__main__":
-    # מאזין החוצה (גם בתוך Docker) על 0.0.0.0:5000
     app.run(host="0.0.0.0", port=5000, debug=True)
