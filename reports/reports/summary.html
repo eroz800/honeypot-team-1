@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Honeypot – דוחות</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" />
+  </head>
+  <body>
+    <h2>דוח אירועים</h2>
+    <p>
+      <a href="/reports.csv">ייצוא CSV</a> |
+      <a href="/reports.pdf">ייצוא PDF</a>
+    </p>
+
+    <table id="events" class="display" style="width:100%">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>IP</th>
+          <th>Trap</th>
+          <th>Action</th>
+          <th>User</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in events %}
+        <tr>
+          <td>{{ r.time }}</td>
+          <td>{{ r.src_ip }}</td>
+          <td>{{ r.trap_type }}</td>
+          <td>{{ r.action }}</td>
+          <td>{{ r.username }}</td>
+          <td>{{ r.details }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        new DataTable("#events", {
+          pageLength: 25,
+          order: [[0, "desc"]],
+          search: { caseInsensitive: true },
+          language: { url: "https://cdn.datatables.net/plug-ins/2.0.7/i18n/he.json" }
+        });
+      });
+    </script>
+  </body>
+</html>
