@@ -247,7 +247,58 @@ def geoip():
     except Exception as e:
         return jsonify({"error": str(e)}), 502
 
+# ---------------- Reports Export ----------------
+@app.route("/reports.csv", methods=["GET"])
+def export_csv():
+    from flask import Response
+    import csv
+    from io import StringIO
 
+    output = StringIO()
+    writer = csv.writer(output)
+
+    # כותרות
+    writer.writerow(["Timestamp", "Trap", "IP", "Input"])
+
+    # דוגמא לנתונים – מחליפים לפי הדאטה האמיתית שלכם
+    sample_data = [
+        ("2025-09-01T12:00:00Z", "http", "1.2.3.4", "GET /"),
+        ("2025-09-01T12:05:00Z", "ftp", "5.6.7.8", "USER test"),
+    ]
+    for row in sample_data:
+        writer.writerow(row)
+
+    output.seek(0)
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=reports.csv"},
+    )
+
+
+@app.route("/reports.pdf", methods=["GET"])
+def export_pdf():
+    from flask import Response
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+    from io import BytesIO
+
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 750, "Honeypot Activity Report")
+    pdf.drawString(100, 730, "Example Data:")
+    pdf.drawString(100, 710, "Timestamp: 2025-09-01T12:00:00Z")
+    pdf.drawString(100, 690, "Trap: http, IP: 1.2.3.4, Input: GET /")
+    pdf.showPage()
+    pdf.save()
+
+    buffer.seek(0)
+    return Response(
+        buffer,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reports.pdf"},
+    )
 if __name__ == "__main__":
     # מאזין החוצה (גם בתוך Docker) על 0.0.0.0:5000
     app.run(host="0.0.0.0", port=5000, debug=True)
