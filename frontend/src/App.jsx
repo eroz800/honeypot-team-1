@@ -178,7 +178,7 @@ export default function App() {
       .sort((a, b) => (a.time < b.time ? -1 : 1));
   }, [filteredEvents]);
 
-  // מנקה שם trap
+  // מנקה שם trap מהאימוג'ים/רווחים/תווים לא-אלפביתיים
   function normalizeTrap(t = "") {
     return String(t)
       .toLowerCase()
@@ -188,7 +188,7 @@ export default function App() {
       .replace(/^_+|_+$/g, "");
   }
 
-  // Simulation
+  // Simulation (עם normalizeTrap + input כאובייקט)
   async function submitSimulation(e) {
     e.preventDefault();
     setSimMsg("");
@@ -203,7 +203,7 @@ export default function App() {
 
     const body = {
       trap_type: trapType,
-      input: simInput ? { raw: simInput } : {},
+      input: simInput ? { raw: simInput } : {}, // שליחה בטוחה לשרת
     };
     if (simIP.trim()) body.ip = simIP.trim();
 
@@ -217,7 +217,7 @@ export default function App() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
       setSimMsg("✅ Simulation sent successfully");
-      loadReport();
+      loadReport(); // רענון מיידי
     } catch (err) {
       setSimMsg(`❌ ${err.message}`);
     } finally {
@@ -238,13 +238,13 @@ export default function App() {
     return Array.from(map.values());
   }, [filteredEvents]);
 
-  // ✅ GeoIP resolve (תוקן לנתיב הנכון)
+  // GeoIP resolve
   async function resolveGeoIP() {
     if (ipAgg.length === 0) return;
     const results = [];
     for (const row of ipAgg) {
       try {
-        const url = `${API}/geoip/${encodeURIComponent(row.ip)}`;
+        const url = `${API}/geoip?ip=${encodeURIComponent(row.ip)}`;
         const res = await fetch(url);
         const data = await res.json();
         if (res.ok) {
@@ -264,7 +264,7 @@ export default function App() {
   const uniqueTraps = new Set(filteredEvents.map(r => r[1]).filter(Boolean)).size;
   const lastSeenTs = filteredEvents[0]?.[0] || null;
 
-  // צבעים
+  // עזר לשיוך צבע לתגית
   const trapClass = (t="") => {
     const k = (t || "").toLowerCase().replace(/\s+/g,'_');
     return ["ftp","ssh","http","ransomware","open_ports","admin_panel","iot_router"].includes(k) ? k : "";
@@ -272,7 +272,7 @@ export default function App() {
 
   return (
     <>
-      {/* רקע */}
+      {/* רקע דינמי */}
       <div className="bgs">
         <div className="blob b1" />
         <div className="blob b2" />
@@ -303,7 +303,259 @@ export default function App() {
         )}
 
         {/* KPIs */}
-        {/* ...שאר הקוד ללא שינוי... */}
+        <motion.div className="kpis"
+          initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} transition={{ delay:.05, duration:.45 }}>
+          <div className="kpi">
+            <div className="kpi-label">Total Attempts</div>
+            <div className="kpi-value">{totalAttempts}</div>
+            <div className="kpi-sub">All events after filters</div>
+          </div>
+          <div className="kpi">
+            <div className="kpi-label">Unique IPs</div>
+            <div className="kpi-value">{uniqueIPs}</div>
+            <div className="kpi-sub">Attack sources</div>
+          </div>
+          <div className="kpi">
+            <div className="kpi-label">Trap Types</div>
+            <div className="kpi-value">{uniqueTraps}</div>
+            <div className="kpi-sub">Seen in current view</div>
+          </div>
+          <div className="kpi">
+            <div className="kpi-label">Last Seen</div>
+            <div className="kpi-value">{lastSeenTs ? new Date(lastSeenTs).toLocaleTimeString() : "—"}</div>
+            <div className="kpi-sub">{lastSeenTs ? new Date(lastSeenTs).toLocaleDateString() : ""}</div>
+          </div>
+        </motion.div>
+
+        {/* Controls */}
+        <motion.div className="controls"
+          initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} transition={{ delay:.12, duration:.45 }}>
+          <input className="input" placeholder="חיפוש (IP / Input / Trap Type)…"
+                 value={query} onChange={e => setQuery(e.target.value)} />
+          <select className="select" value={selectedTrap} onChange={e => setSelectedTrap(e.target.value)}>
+            {trapOptions.map(opt => <option key={opt} value={opt}>{opt === "all" ? "All traps" : opt}</option>)}
+          </select>
+          <button className="btn" onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}>
+            Sort by Time: {sortDir.toUpperCase()}
+          </button>
+        </motion.div>
+
+        {/* Charts */}
+        <div className="grid">
+          {/* Attempts by Trap Type */}
+          <motion.div className="card"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+            <h2>Attempts by Trap Type</h2>
+            {byTrap.length === 0 ? (
+              <div className="empty">אין נתונים לגרף.</div>
+            ) : (
+              <div className="chart-box">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={byTrap} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                    <XAxis dataKey="trap" stroke="#94a3b8" />
+                    <YAxis allowDecimals={false} stroke="#94a3b8" />
+                    <Tooltip
+                      contentStyle={{
+                        background: "rgba(15,23,42,0.95)",
+                        border: "1px solid #334155",
+                        borderRadius: "8px",
+                        color: "#f8fafc",
+                      }}
+                      itemStyle={{ color: "#fefefe", fontWeight: 500 }}
+                      labelStyle={{ color: "#38bdf8", fontWeight: 600 }}
+                    />
+                    <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            <div className="subtle">Grouped by trap type</div>
+          </motion.div>
+
+          {/* Attempts Over Time */}
+          <motion.div className="card"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}>
+            <h2>Attempts Over Time</h2>
+            {byTime.length === 0 ? (
+              <div className="empty">אין נתונים לגרף.</div>
+            ) : (
+              <div className="chart-box">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={byTime} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                    <XAxis dataKey="time" stroke="#94a3b8" />
+                    <YAxis allowDecimals={false} stroke="#94a3b8" />
+                    <Tooltip
+                      contentStyle={{
+                        background: "rgba(15,23,42,0.95)",
+                        border: "1px solid #334155",
+                        borderRadius: "8px",
+                        color: "#f8fafc",
+                      }}
+                      itemStyle={{ color: "#fefefe", fontWeight: 500 }}
+                      labelStyle={{ color: "#38bdf8", fontWeight: 600 }}
+                    />
+                    <Legend />
+                    <Line type="monotone" dataKey="count" stroke="#60a5fa" strokeWidth={2} dot={{ fill: "#38bdf8" }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            <div className="subtle">Hourly buckets</div>
+          </motion.div>
+        </div>
+
+        {/* GeoIP */}
+        <motion.div className="card" style={{ marginTop:16 }}
+          initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:.26 }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
+            <h2>GeoIP Panel</h2>
+            <button className="btn" onClick={resolveGeoIP}>Resolve GeoIP</button>
+          </div>
+          {ipAgg.length === 0 ? (
+            <div className="empty">להצגה כרגע אין כתובות IP.</div>
+          ) : (
+            <>
+              {geoFlag && <div className="pill" style={{ marginTop:8 }}>✅ GeoIP resolved</div>}
+              <div className="table-wrap" style={{ marginTop:10 }}>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>IP</th>
+                      <th>Attempts</th>
+                      <th>Last Seen</th>
+                      <th>Location</th>
+                      <th>Org</th>
+                      <th>Coordinates</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ipAgg.map(row => {
+                      const match = geoRows.find(g => g.ip === row.ip);
+                      return (
+                        <tr key={row.ip}>
+                          <td>{row.ip}</td>
+                          <td>{row.attempts}</td>
+                          <td>{row.lastSeen}</td>
+                          <td>{match?.location || row.location}</td>
+                          <td>{match?.org || row.org}</td>
+                          <td>{match?.coords || row.coords}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="note">※ שימוש ב־ipapi.co. יתכנו הגבלות מהירות/DB.</div>
+            </>
+          )}
+        </motion.div>
+
+        {/* Simulator */}
+        <motion.div className="card" style={{ marginTop:16 }}
+          initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:.30 }}>
+          <h2>Simulator</h2>
+          <form className="sim-form" onSubmit={submitSimulation}>
+            <select className="select" value={simTrap} onChange={e => setSimTrap(e.target.value)} aria-label="trap type">
+              <option value="">Trap type…</option>
+              {trapOptions.filter(t => t !== "all").map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
+            <input className="input" placeholder='Input (e.g. {"cmd":"ls"} או טקסט חופשי)'
+                  value={simInput} onChange={e => setSimInput(e.target.value)} aria-label="input" />
+            <input className="input" placeholder="IP (optional)"
+                  value={simIP} onChange={e => setSimIP(e.target.value)} aria-label="ip" />
+            <button className="btn solid" type="submit" disabled={simLoading}>
+              {simLoading ? "Sending…" : "Send"}
+            </button>
+          </form>
+          {simMsg && <div className={`alert ${simMsg.startsWith("✅") ? "ok" : "err"}`}>{simMsg}</div>}
+          <div className="note">טיפ: אם <b>Trap type</b> ריק, נשתמש ב־Filter שמעל.</div>
+        </motion.div>
+
+        {/* Events Table */}
+        <motion.div className="card" style={{ marginTop:16 }}
+          initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:.34 }}>
+          <h2>Events Report</h2>
+          {loading && <div className="empty">טוען…</div>}
+          {error && <div className="alert err">{error}</div>}
+          {filteredEvents.length === 0 && !loading ? (
+            <div className="empty">אין אירועים להצגה כרגע.</div>
+          ) : (
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Trap Type</th>
+                    <th>IP</th>
+                    <th>Input</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pagedEvents.map((row, i) => (
+                    <tr key={`${page}-${i}`}>
+                      <td>{row[0] || ""}</td>
+                      <td>
+                        <span className={`badge-trap ${trapClass(row[1])}`}>{row[1] || ""}</span>
+                      </td>
+                      <td>{row[2] || ""}</td>
+                      <td>{row[3] || ""}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* --- שלב 10: פקדי עימוד --- */}
+              <div
+                className="pager"
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginTop: 10,
+                }}
+              >
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <button
+                    className="btn"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                  >
+                    Prev
+                  </button>
+                  <button
+                    className="btn"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                  >
+                    Next
+                  </button>
+                  <span style={{ opacity: 0.8 }}>Page {page} / {totalPages}</span>
+                </div>
+
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ opacity: 0.8 }}>Rows:</span>
+                  <select
+                    className="select"
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setPage(1);
+                    }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span style={{ opacity: 0.6 }}>Total: {totalItems}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="footer">{lastUpdated ? `עודכן: ${lastUpdated.toLocaleTimeString()}` : "—"}</div>
+        </motion.div>
       </div>
     </>
   );
