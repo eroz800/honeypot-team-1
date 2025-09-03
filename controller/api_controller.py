@@ -1,5 +1,8 @@
 # FILE: controller/api_controller.py
-from flask import Flask, request, jsonify, send_from_directory, render_template_string, send_file
+from flask import (
+    Flask, request, jsonify, send_from_directory,
+    render_template_string, send_file, Response
+)
 from pathlib import Path
 import sys, os, json, urllib.request
 
@@ -23,7 +26,8 @@ try:
 except Exception:
     log_interaction = None
 
-from model.report_generator import generate_report
+# ⬅️ משתמשים במחולל הדוחות החדש (CSV/PDF + events)
+from model import report_generator
 
 # --- Flask app ---
 app = Flask(__name__)
@@ -67,19 +71,51 @@ def dashboard():
     with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
         return render_template_string(f.read())
 
+# ---------------- Reports & Data Export (CSV / PDF / HTML) ----------------
 @app.route("/report")
-def show_report():
+def report_html():
+    """מציג את דוח האירועים בעמוד HTML שמוגדר ב-reports/summary.html"""
     try:
-        out_path = generate_report()
-        return send_file(str(out_path), mimetype="text/html")
+        events = report_generator.get_events_for_report()
+        html_path = BASE_DIR / "reports" / "summary.html"
+        with open(html_path, "r", encoding="utf-8") as f:
+            html_src = f.read()
+        return render_template_string(html_src, events=events)
     except FileNotFoundError:
-        return "<h1>אין דוח זמין</h1><p>לא נמצאו קבצי לוג ליצירת דוח.</p>", 404
+        return "<h1>אין תבנית דוח</h1><p>חסר reports/summary.html</p>", 404
     except Exception as e:
-        return f"<h1>שגיאה ביצירת הדוח</h1><pre>{e}</pre>", 500
+        return f"<h1>שגיאה בטעינת הדוח</h1><pre>{e}</pre>", 500
 
+# קישור ישן אם משתמשים בו – מפנה לאותו הדוח
 @app.route("/summary")
 def summary():
-    return show_report()
+    return report_html()
+
+# ייצוא CSV
+@app.route("/reports.csv")
+def report_csv():
+    try:
+        csv_str = report_generator.export_csv()
+        return Response(
+            csv_str,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment; filename=honeypot_report.csv"},
+        )
+    except Exception as e:
+        return f"CSV export error: {e}", 500
+
+# ייצוא PDF
+@app.route("/reports.pdf")
+def report_pdf():
+    try:
+        pdf_bytes = report_generator.export_pdf()
+        return Response(
+            pdf_bytes,
+            mimetype="application/pdf",
+            headers={"Content-Disposition": "attachment; filename=honeypot_report.pdf"},
+        )
+    except Exception as e:
+        return f"PDF export error: {e}", 500
 
 @app.route("/style.css")
 def style():
@@ -148,30 +184,11 @@ def trap_iot_router():
 
 # --- helpers: נרמול שמות טראפים / כינויים ---
 _TRAP_ALIASES = {
-    # web
-    "http": "http",
-    "https": "http",
-    "web": "http",
-
-    # ftp/ssh/phishing
-    "ftp": "ftp",
-    "ssh": "ssh",
-    "phishing": "phishing",
-
-    # admin panel
-    "admin": "admin_panel",
-    "admin-panel": "admin_panel",
-    "admin_panel": "admin_panel",
-
-    # open ports
-    "open-ports": "open_ports",
-    "open_ports": "open_ports",
-    "open ports": "open_ports",
-
-    # iot router
-    "iot": "iot_router",
-    "router": "iot_router",
-    "iot_router": "iot_router",
+    "http": "http", "https": "http", "web": "http",
+    "ftp": "ftp", "ssh": "ssh", "phishing": "phishing",
+    "admin": "admin_panel", "admin-panel": "admin_panel", "admin_panel": "admin_panel",
+    "open-ports": "open_ports", "open_ports": "open_ports", "open ports": "open_ports",
+    "iot": "iot_router", "router": "iot_router", "iot_router": "iot_router",
 }
 def _normalize_trap_name(name: str) -> str:
     s = (name or "").strip().lower()
@@ -183,11 +200,9 @@ def _normalize_trap_name(name: str) -> str:
 def simulate():
     data = request.get_json(silent=True) or {}
 
-    # raw + normalized name
     trap_type_raw = str(data.get("trap_type", ""))
     trap_type = _normalize_trap_name(trap_type_raw)
 
-    # input יכול להגיע כמילון או כמחרוזת חופשית
     input_data = data.get("input", {}) or {}
     if isinstance(input_data, str):
         input_data = {"raw": input_data}
@@ -209,7 +224,6 @@ def simulate():
         return jsonify(result), 200
 
     except KeyError:
-        # מוסיף רשימת טראפים זמינים לעזרה בדיבאג
         try:
             available = sorted(list(getattr(manager, "_traps", {}).keys()))
         except Exception:
