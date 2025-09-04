@@ -27,3 +27,12 @@ services:
       - "8000:8000"
     volumes:
       - ./logs:/app/logs
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
