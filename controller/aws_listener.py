@@ -50,6 +50,5 @@ def health():
 
 
 if __name__ == "__main__":
-    # להרצה מקומית/דמו. ב-Production נריץ עם Gunicorn מאחורי Nginx.
-    app.run(host="127.0.0.1", port=8000, debug=True)
-
+    # ריצה על HTTPS בפורט 8443 עם TLS
+    app.run(host="0.0.0.0", port=8443, ssl_context=("certs/cert.pem", "certs/key.pem"))
