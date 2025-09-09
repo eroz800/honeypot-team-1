@@ -153,3 +153,7 @@
 2025-09-09 13:59:14,602 INFO masquerade (NAT) address: None
 2025-09-09 13:59:14,603 INFO passive ports: 60000->60009
 2025-09-09 13:59:14,604 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
+2025-09-09 16:58:08,163 INFO concurrency model: async
+2025-09-09 16:58:08,166 INFO masquerade (NAT) address: None
+2025-09-09 16:58:08,166 INFO passive ports: 60000->60009
+2025-09-09 16:58:08,167 INFO >>> starting FTP server on 0.0.0.0:2121, pid=1 <<<
