@@ -79,14 +79,14 @@ export default function App() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlText, "text/html");
       const rows = [];
-      const trs = doc.querySelectorAll("table tr, tr");
+      const table = doc.querySelector("table");
+      const trs = table ? table.querySelectorAll("tr") : [];
       trs.forEach((tr, i) => {
-        const cells = Array.from(tr.querySelectorAll("th,td")).map(td => td.textContent.trim());
+        // Only select <td> cells (skip header)
+        const cells = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
         if (!cells.length) return;
-        if (i === 0 && tr.querySelectorAll("th").length > 0) return;
         rows.push(cells.slice(0, 4)); // [time, trap, ip, input]
       });
-
       setEvents(rows);
       setLastUpdated(new Date());
     } catch (e) {

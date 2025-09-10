@@ -67,7 +67,7 @@ def test_ransomware_encrypts_and_writes_log():
         log_text_after = log_file.read_text(encoding="utf-8")
         assert len(log_text_after) > len(log_text_before)
         assert "lock:" in log_text_after
-        assert "summary:" in log_text_after
+    assert "summary:" in log_text_after
 
     finally:
         # ניקוי

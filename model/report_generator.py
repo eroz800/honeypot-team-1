@@ -1,20 +1,51 @@
 from io import StringIO, BytesIO
 from typing import List, Dict
 import csv
+import os
+import json
+import glob
+from pathlib import Path
 
-# פונקציה שמחזירה אירועים לדוחות (כרגע דוגמה — צריך להחליף בקריאה אמיתית ל־DB/לוגים)
-def _fetch_events() -> List[Dict]:
-    return [
-        {
-            "time": "2025-09-01T10:41:55Z",
-            "src_ip": "1.2.3.4",
-            "trap_type": "ssh",
-            "action": "login_attempt",
-            "username": "root",
-            "details": "failed password",
-        },
-    ]
-
+def _fetch_events():
+    logs_dir = Path(__file__).resolve().parents[1] / "logs"
+    events = []
+    log_files = glob.glob(str(logs_dir / "*.log")) + glob.glob(str(logs_dir / "*.txt"))
+    for file in log_files:
+        with open(file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                # Try JSON
+                try:
+                    obj = json.loads(line)
+                    event = {
+                        "time": obj.get("time") or obj.get("timestamp"),
+                        "trap_type": obj.get("trap") or obj.get("trap_type"),
+                        "src_ip": obj.get("ip") or obj.get("src_ip"),
+                        "input": obj.get("input") or obj.get("details") or obj.get("action") or "",
+                    }
+                    events.append(event)
+                    continue
+                except Exception:
+                    pass
+                # Try CSV
+                try:
+                    if line.count(",") >= 3:
+                        reader = csv.reader([line])
+                        row = next(reader)
+                        event = {
+                            "time": row[0],
+                            "trap_type": row[1],
+                            "src_ip": row[2],
+                            "input": row[3] if len(row) > 3 else "",
+                        }
+                        events.append(event)
+                        continue
+                except Exception:
+                    pass
+    events.sort(key=lambda e: e.get("time") or "", reverse=True)
+    return events
 
 # נירמול סוגי טראפים לשמות אחידים
 TRAP_ALIASES = {

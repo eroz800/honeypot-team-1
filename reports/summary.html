@@ -13,18 +13,26 @@
     
 </head><body>
 <h1>📊 Honeypot Activity Summary</h1>
-<div class='stats'><h2>Summary Stats</h2><ul>
-<li>🌐 http: <b>2</b></li>
-<li>📁 ftp: <b>2</b></li>
-<li>🔑 ssh: <b>1</b></li>
-<li>🛡️ open_ports: <b>2</b></li>
-</ul></div>
-<table><tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
-<tr><td>2025-08-28T12:54:44.880231Z</td><td>🛡️ open_ports</td><td>7.7.7.7</td><td>&quot;Port: 9999&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.879271Z</td><td>🛡️ open_ports</td><td>6.6.6.6</td><td>&quot;Port: 22&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.879271Z</td><td>🔑 ssh</td><td>5.5.5.5</td><td>&quot;ls -la /root&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.878233Z</td><td>📁 ftp</td><td>4.4.4.4</td><td>&quot;LIST&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.876237Z</td><td>📁 ftp</td><td>3.3.3.3</td><td>&quot;USER anonymous&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.875223Z</td><td>🌐 http</td><td>2.2.2.2</td><td>&quot;POST /login user=admin&amp;pass=123456&quot;</td></tr>
-<tr><td>2025-08-28T12:54:44.873880Z</td><td>🌐 http</td><td>1.2.3.4</td><td>&quot;GET /&quot;</td></tr>
+<div class='stats'><h2>Summary Stats</h2>
+<ul>
+{% set trap_counts = {} %}
+{% for e in events %}
+  {% set t = e.trap_type %}
+  {% set _ = trap_counts.update({t: trap_counts.get(t, 0) + 1}) %}
+{% endfor %}
+{% for t, count in trap_counts.items() %}
+  <li>{{ t }}: <b>{{ count }}</b></li>
+{% endfor %}
+</ul>
+</div>
+<table>
+  <tr><th>Timestamp</th><th>Trap</th><th>IP</th><th>Input</th></tr>
+  {% for e in events %}
+    <tr>
+      <td>{{ e.time }}</td>
+      <td>{{ e.trap_type }}</td>
+      <td>{{ e.src_ip }}</td>
+      <td>{{ e.input }}</td>
+    </tr>
+  {% endfor %}
 </table></body></html>
