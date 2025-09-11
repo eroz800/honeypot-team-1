@@ -9,3 +9,5 @@
 2025-08-27T18:12:33.844029Z, IoT Router, 127.0.0.1, {'ssid': 'MyNetwork', 'password': 'secret123', 'dns': '1.1.1.1', 'username': 'MyNetwork'}
 2025-08-27T18:18:05.793866Z, IoT Router, 127.0.0.1, {'ssid': 'MyNetwork', 'password': 'secret123', 'dns': '1.1.1.1', 'username': 'MyNetwork'}
 2025-09-09T10:50:27.924034Z, IoT Router, 172.18.0.1, {'ssid': 'user', 'password': '12345', 'dns': '8.8.8.8', 'username': 'user'}
+2025-09-11T13:29:52.394838Z, IoT Router, 3.3.3.3, {'action': 'change_dns'}
+2025-09-11T13:30:09.792821Z, IoT Router, 3.3.3.3, {'action': 'change_dns'}

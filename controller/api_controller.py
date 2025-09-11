@@ -141,11 +141,6 @@ def trap_phishing():
     data = request.form.to_dict() or request.get_json(silent=True) or {}
     ip = request.remote_addr
     result = trap.simulate_interaction(data, ip)
-    if log_interaction:
-        try:
-            log_interaction("phishing", ip, data)
-        except Exception:
-            pass
     return jsonify(result)
 
 @app.route("/trap/admin_panel", methods=["POST"])
@@ -154,11 +149,6 @@ def trap_admin_panel():
     data = request.form.to_dict() or request.get_json(silent=True) or {}
     ip = request.remote_addr
     result = trap.simulate_interaction(data, ip)
-    if log_interaction:
-        try:
-            log_interaction("admin_panel", ip, data)
-        except Exception:
-            pass
     return jsonify(result)
 
 @app.route("/trap/iot_router", methods=["GET", "POST"])
@@ -174,13 +164,8 @@ def trap_iot_router():
     response_data = data.copy()
     response_data.update(result.get("data", {}))
 
-    if log_interaction:
-        try:
-            log_interaction("iot_router", ip, data)
-        except Exception:
-            pass
-
     return jsonify({"status": "ok", "data": response_data})
+
 
 # --- helpers: נרמול שמות טראפים / כינויים ---
 _TRAP_ALIASES = {
@@ -216,11 +201,6 @@ def simulate():
 
     try:
         result = manager.run_trap(trap_type, input_data, ip)
-        if log_interaction:
-            try:
-                log_interaction(trap_type, ip, input_data)
-            except Exception:
-                pass
         return jsonify(result), 200
 
     except KeyError:

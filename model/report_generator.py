@@ -49,11 +49,44 @@ def _fetch_events():
 
 # נירמול סוגי טראפים לשמות אחידים
 TRAP_ALIASES = {
+    # Admin Panel
     "admin": "admin_panel",
     "panel": "admin_panel",
+    "adminpanel": "admin_panel",
+    "admin_panel": "admin_panel",
+
+    # HTTP
+    "http": "http",
+    "httptrap": "http",
+
+    # FTP
+    "ftp": "ftp",
+    "ftptrap": "ftp",
+
+    # SSH
+    "ssh": "ssh",
+    "sshtrap": "ssh",
+
+    # Ransomware
+    "ransom": "ransomware",
+    "ransomware": "ransomware",
+    "crypto": "ransomware",
+
+    # Open Ports
     "ports": "open_ports",
     "portscan": "open_ports",
+    "open_ports": "open_ports",
+
+    # IoT Router
+    "iot": "iot_router",
+    "iot router": "iot_router",
+    "iot_router": "iot_router",
+
+    # Phishing
+    "phish": "phishing",
+    "phishing": "phishing",
 }
+
 
 
 def get_events_for_report() -> List[Dict]:
