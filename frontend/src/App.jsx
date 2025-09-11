@@ -114,9 +114,31 @@ export default function App() {
     setPage(1);
   }, [selectedTrap, debouncedQuery, sortDir]);
 
-  // Options
+  // === הוספה: נירמול שמות טראפים (מסיר אמוג׳י/רווחים וממיר ל-snake_case) ===
+  const normalizeTrapLabel = (t = "") =>
+    String(t)
+      .toLowerCase()
+      // מסיר אמוג'י/תווים גרפיים בתחילת המחרוזת
+      .replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]*/u, "")
+      .trim()
+      .replace(/\s+/g, "_");
+
+  // === הוספה: מיפוי norm -> label המקורי (כדי להציג ב־UI את הטקסט עם האימוג׳י) ===
+  const trapDisplay = useMemo(() => {
+    const map = new Map();
+    for (const r of events) {
+      const raw = r[1] || "";
+      const norm = normalizeTrapLabel(raw);
+      if (norm && !map.has(norm)) map.set(norm, raw);
+    }
+    return map;
+  }, [events]);
+
+  // Options (דינמי מהדו"ח, לפי נירמול)
   const trapOptions = useMemo(() => {
-    const set = new Set(events.map(r => r[1]).filter(Boolean));
+    const set = new Set(
+      events.map(r => normalizeTrapLabel(r[1] || "")).filter(Boolean)
+    );
     return ["all", ...Array.from(set).sort()];
   }, [events]);
 
@@ -131,7 +153,8 @@ export default function App() {
   const filteredEvents = useMemo(() => {
     let data = [...events];
     if (selectedTrap !== "all") {
-      data = data.filter(row => (row[1] || "").toLowerCase() === selectedTrap.toLowerCase());
+      // השוואה לפי נירמול כדי ש״🛡️ open_ports״ ייחשב כ-open_ports
+      data = data.filter(row => normalizeTrapLabel(row[1] || "") === selectedTrap);
     }
     if (debouncedQuery) {
       data = data.filter(row => {
@@ -154,13 +177,19 @@ export default function App() {
   // Charts data
   const byTrap = useMemo(() => {
     const counts = {};
+    const labels = new Set();
     for (const row of filteredEvents) {
-      const trap = row[1] || "";
-      counts[trap] = (counts[trap] || 0) + 1;
+      const raw = row[1] || "";
+      const norm = normalizeTrapLabel(raw);
+      if (!norm) continue;
+      labels.add(norm);
+      counts[norm] = (counts[norm] || 0) + 1;
     }
-    return Object.entries(counts).map(([trap, count]) => ({ trap, count }))
+    // מציגים ב־XAxis את הלייבל המקורי (עם האימוג׳י) אם קיים
+    return Array.from(labels)
+      .map(norm => ({ trap: trapDisplay.get(norm) || norm, count: counts[norm] || 0 }))
       .sort((a, b) => b.count - a.count);
-  }, [filteredEvents]);
+  }, [filteredEvents, trapDisplay]);
 
   const byTime = useMemo(() => {
     const buckets = {};
@@ -333,7 +362,11 @@ export default function App() {
           <input className="input" placeholder="חיפוש (IP / Input / Trap Type)…"
                  value={query} onChange={e => setQuery(e.target.value)} />
           <select className="select" value={selectedTrap} onChange={e => setSelectedTrap(e.target.value)}>
-            {trapOptions.map(opt => <option key={opt} value={opt}>{opt === "all" ? "All traps" : opt}</option>)}
+            {trapOptions.map(opt => (
+              <option key={opt} value={opt}>
+                {opt === "all" ? "All traps" : (trapDisplay.get(opt) || opt)}
+              </option>
+            ))}
           </select>
           <button className="btn" onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}>
             Sort by Time: {sortDir.toUpperCase()}
@@ -356,14 +389,15 @@ export default function App() {
                     <XAxis dataKey="trap" stroke="#94a3b8" />
                     <YAxis allowDecimals={false} stroke="#94a3b8" />
                     <Tooltip
+                      cursor={false}
                       contentStyle={{
-                        background: "rgba(15,23,42,0.95)",
-                        border: "1px solid #334155",
-                        borderRadius: "8px",
-                        color: "#f8fafc",
-                      }}
-                      itemStyle={{ color: "#fefefe", fontWeight: 500 }}
-                      labelStyle={{ color: "#38bdf8", fontWeight: 600 }}
+                       background: "rgba(15,23,42,0.95)",
+                       border: "1px solid #334155",
+                       borderRadius: "8px",
+                       color: "#f8fafc",
+                     }}
+                     itemStyle={{ color: "#fefefe", fontWeight: 500 }}
+                     labelStyle={{ color: "#38bdf8", fontWeight: 600 }}
                     />
                     <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
                   </BarChart>
@@ -387,6 +421,7 @@ export default function App() {
                     <XAxis dataKey="time" stroke="#94a3b8" />
                     <YAxis allowDecimals={false} stroke="#94a3b8" />
                     <Tooltip
+                      cursor={false}
                       contentStyle={{
                         background: "rgba(15,23,42,0.95)",
                         border: "1px solid #334155",
@@ -459,7 +494,11 @@ export default function App() {
           <form className="sim-form" onSubmit={submitSimulation}>
             <select className="select" value={simTrap} onChange={e => setSimTrap(e.target.value)} aria-label="trap type">
               <option value="">Trap type…</option>
-              {trapOptions.filter(t => t !== "all").map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              {trapOptions.filter(t => t !== "all").map(opt => (
+                <option key={opt} value={opt}>
+                  {trapDisplay.get(opt) || opt}
+                </option>
+              ))}
             </select>
             <input className="input" placeholder='Input (e.g. {"cmd":"ls"} או טקסט חופשי)'
                   value={simInput} onChange={e => setSimInput(e.target.value)} aria-label="input" />

@@ -152,6 +152,7 @@ body{
 .badge-trap.open_ports{ background: rgba(59,130,246,.12); }
 .badge-trap.admin_panel{ background: rgba(14,165,233,.12); border-color: rgba(14,165,233,.35);}
 .badge-trap.iot_router{ background: rgba(45,212,191,.12); border-color: rgba(45,212,191,.35);}
+.badge-trap.phishing{ background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.35); }
 
 .empty{ text-align:center; padding:18px; color:var(--muted); }
 .note{ color:var(--muted); font-size:12px; margin-top:6px; }
