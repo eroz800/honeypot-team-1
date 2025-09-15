@@ -1,4 +1,4 @@
-/* src/index.css */
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root{
@@ -7,9 +7,9 @@
   --card: #121b34;
   --muted: #8ca2c0;
   --text: #e6eefc;
-  --primary: #3b82f6; /* כחול */
+  --primary: #3b82f6; 
   --primary-600:#2563eb;
-  --accent: #22d3ee; /* טורקיז עדין */
+  --accent: #22d3ee; 
   --success:#22c55e;
   --danger:#ef4444;
   --warning:#f59e0b;

@@ -7,7 +7,7 @@ def test_trap_manager_add_and_run_ssh():
     trap = SshTrap()
     manager = TrapManager()
 
-    # הוספת הטראפ עם שם חדש כדי לא לדרוס קיים
+    
     manager.add_trap("ssh_test", trap)
 
     # הרצת הטראפ

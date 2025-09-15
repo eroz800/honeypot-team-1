@@ -6,7 +6,7 @@ from .trap import Trap
 
 class FTPTrap(Trap):
     def __init__(self):
-        super().__init__()  # בלי פרמטרים כי Trap לא מצפה
+        super().__init__()  
 
     def get_protocol(self) -> str:
         return "FTP"
@@ -51,7 +51,7 @@ class FTPTrap(Trap):
             }
         }
 
-    # --- עזר לשמירת לוגים ---
+    #  עזר לשמירת לוגים 
     def _format_log(self, command: str, ip: str) -> str:
         from datetime import datetime, UTC
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")

@@ -1,4 +1,4 @@
-# tests/test_traps.py
+
 import time
 import pytest
 from model.phishing_trap import PhishingTrap
@@ -27,23 +27,20 @@ def manager(monkeypatch):
 
 
 def _assert_common(result: dict, trap_type: str, ip: str, input_data: str | None):
-    # כל הטראפים שלכם מחזירים דיקט "עטוף" עם המפתחות הבאים
     assert isinstance(result, dict)
     assert result["trap_type"] == trap_type
     assert result["ip"] == ip
     assert result["input"] == input_data
     assert isinstance(result["timestamp"], int)
-    # חותמת זמן "סבירה" (לא עתידית ב- > 5 שניות)
     assert result["timestamp"] <= int(time.time()) + 5
     assert "protocol" in result and isinstance(result["protocol"], str)
     assert "data" in result and isinstance(result["data"], dict)
 
 
-# ---------- בדיקות כלליות על המנהל ----------
+# בדיקות כלליות על המנהל 
 
 def test_list_traps_contains_expected(manager):
     traps = set(manager.list_traps())
-    # לפי ה-__init__ שלכם יש שלושה טראפים
     assert {"http", "ftp", "ssh"}.issubset(traps)
 
 
@@ -59,7 +56,7 @@ def test_run_unknown_trap_raises_keyerror(manager):
         manager.run_trap("doesnt_exist", input_data="ping", ip="1.2.3.4")
 
 
-# ---------- HTTPTrap ----------
+# HTTPTrap
 
 def test_http_get_root_ok(manager):
     ip = "127.0.0.10"
@@ -76,7 +73,7 @@ def test_http_post_login(manager):
     payload = "POST /login\nuser=admin&pass=123456"
     res = manager.run_trap("http", input_data=payload, ip=ip)
     _assert_common(res, "http", ip, payload)
-    assert res["data"]["status"] == 200  # במסלולים מוגדר 200 אם יש התאמה
+    assert res["data"]["status"] == 200  
     assert "Invalid credentials" in res["data"]["body"]
 
 
@@ -88,7 +85,7 @@ def test_http_unknown_path_404(manager):
     assert "<h1>404</h1>" in res["data"]["body"]
 
 
-# ---------- FTPTrap ----------
+# FTPTrap 
 
 def test_ftp_user_requires_pass(manager):
     ip = "10.0.0.5"
@@ -115,7 +112,7 @@ def test_ftp_unknown_command(manager):
     assert res["data"]["response"] == "502 Command not implemented."
 
 
-# ---------- SshTrap ----------
+# SshTrap 
 
 def test_ssh_returns_wrapped_dict(manager):
     ip = "192.168.1.30"
@@ -125,10 +122,8 @@ def test_ssh_returns_wrapped_dict(manager):
     # בדיקות כלליות
     _assert_common(res, "ssh", ip, inp)
 
-    # פרוטוקול מהטראפ
+    
     assert res["protocol"] == "SSH"
-
-    # בודקים שהתוצאה מכילה לוג בפורמט החדש (CSV)
     assert "data" in res
     assert "log" in res["data"]
 
@@ -140,7 +135,7 @@ def test_ssh_returns_wrapped_dict(manager):
 
 
 
-# ---------- בדיקות עקביות/מעטפת ----------
+# בדיקות עקביות/מעטפת 
 
 def test_manager_does_not_double_wrap_when_trap_returns_full_envelope(manager):
     """
@@ -184,18 +179,16 @@ def test_phishing_trap_missing_data():
     trap.simulate_interaction("", "", "127.0.0.1")
 
     content = LOG_PATH.read_text()
-    # לא אמור להישמר משתמש ריק
     assert "username': ''" not in content
 
 
-# ---------- OpenPortsTrap ----------
+# OpenPortsTrap 
 
 @pytest.fixture
 def trap():
     return OpenPortsTrap()
 
 def test_known_port_recognized(trap):
-    # Known port (e.g., 22)
     result = trap.simulate_interaction({"port": 22}, "127.0.0.1")
     assert result["data"]["port"] == 22
     assert result["data"]["service_guess"] != "unknown"

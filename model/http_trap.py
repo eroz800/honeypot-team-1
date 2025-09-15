@@ -1,4 +1,4 @@
-# model/http_trap.py
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, UTC
@@ -17,7 +17,7 @@ class HTTPTrap(Trap):
       {"method": "POST", "path": "/login", "payload": "user=admin&pass=123456"}
     """
 
-    # מיפוי נתיבים ל־responses בהתאם לשיטה (GET/POST)
+    
     _routes: Dict[str, Dict[str, str]] = field(default_factory=lambda: {
         "/": {"GET": "<h1>Welcome</h1><p>Internal Admin Portal</p>"},
         "/login": {
@@ -34,7 +34,6 @@ class HTTPTrap(Trap):
         return "http"
 
     def simulate_interaction(self, input_data, ip: str):
-        # בניית בקשה גולמית
         if isinstance(input_data, dict):
             method = input_data.get("method", "GET")
             path = input_data.get("path", "/")
@@ -60,7 +59,7 @@ class HTTPTrap(Trap):
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
             "ip": ip,
-            "input": raw,   # 🔑 שינוי: מחזירים את המחרוזת הגולמית לטסטים
+            "input": raw,   
             "timestamp": int(time.time()),
             "data": {
                 "status": status,
@@ -69,7 +68,7 @@ class HTTPTrap(Trap):
             }
         }
 
-    # --- פונקציות עזר ---
+    # פונקציות עזר 
 
     def _parse_request(self, raw: str) -> tuple[str, str, str]:
         raw = (raw or "").strip()

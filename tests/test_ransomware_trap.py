@@ -1,4 +1,4 @@
-# FILE: tests/test_ransomware_trap.py
+
 from pathlib import Path
 from model.ransomware_trap import RansomwareTrap, BAIT_DIR, LOG_FILE
 
@@ -15,7 +15,7 @@ def test_ransomware_encrypts_and_writes_log():
     log_file = LOG_FILE
     logs_dir = log_file.parent
 
-    # גיבוי bait_files אם קיימת
+   
     backup_dir = None
     if bait_dir.exists():
         backup_dir = bait_dir.with_name("bait_files__backup_for_test")
@@ -42,7 +42,7 @@ def test_ransomware_encrypts_and_writes_log():
         trap = RansomwareTrap()
         out = trap.run("TEST-RANSOM", "10.0.0.9")
 
-        # --- בדיקות פלט ---
+        # בדיקות פלט 
         assert out["trap_type"] == "ransomware"
         assert out["protocol"] == "FILE"
         assert "data" in out
@@ -51,18 +51,18 @@ def test_ransomware_encrypts_and_writes_log():
         assert any(name.endswith(".locked") for name in data["changed_files"])
         assert "README.txt" in str(data["note"])
 
-        # --- בדיקת קבצים בפועל ---
+        # בדיקת קבצים בפועל 
         locked_files = {p.name for p in bait_dir.glob("*.locked")}
         assert "a.pdf.locked" in locked_files
         assert "b.docx.locked" in locked_files
         assert (bait_dir / "README.txt").exists()
 
-        # --- בדיקת README ---
+        # בדיקת README 
         readme_content = (bait_dir / "README.txt").read_text(encoding="utf-8").lower()
         keywords = ["ransom", "recover", "bitcoin", "כופר", "שחזור"]
         assert any(k in readme_content for k in keywords)
 
-        # --- בדיקת לוג ---
+        # בדיקת לוג 
         assert log_file.exists()
         log_text_after = log_file.read_text(encoding="utf-8")
         assert len(log_text_after) > len(log_text_before)
@@ -82,7 +82,7 @@ def test_ransomware_encrypts_and_writes_log():
             except OSError:
                 pass
 
-        # שחזור גיבוי אם היה
+        
         if backup_dir and backup_dir.exists():
             backup_dir.rename(bait_dir)
         else:

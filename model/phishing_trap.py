@@ -2,7 +2,7 @@ import datetime
 import os
 import json
 from model.trap import Trap
-from flask import request   # בשביל שליפת ה-IP מהבקשה
+from flask import request   
 
 LOG_FILE = os.path.join(os.path.dirname(__file__), "..", "logs", "honeypot.log")
 
@@ -26,15 +26,15 @@ class PhishingTrap(Trap):
         אחרת – נשמור ללוג בפורמט JSON ונחזיר את הדאטה בפורמט אחיד.
         """
 
-        # אם לא הגיע IP – ננסה להוציא מהבקשה
+        
         if ip is None:
             ip = request.headers.get("X-Forwarded-For", request.remote_addr)
 
-        # אם לא הגיע timestamp → נייצר חדש
+       
         if timestamp is None:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # נכין dict אחיד
+        
         data = {
             "trap": self.get_type(),
             "protocol": self.get_protocol(),

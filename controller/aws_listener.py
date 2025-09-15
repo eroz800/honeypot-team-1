@@ -1,4 +1,4 @@
-# controller/aws_listener.py
+
 from flask import Flask, request, jsonify, Request
 from model.trap_manager import TrapManager
 import sys

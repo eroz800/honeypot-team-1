@@ -1,5 +1,5 @@
 from model.trap import Trap
-from model.logger import log_interaction  # ← שימוש בשם הפונקציה שלך
+from model.logger import log_interaction  
 
 import time
 

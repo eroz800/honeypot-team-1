@@ -31,7 +31,7 @@ def test_end_to_end_pipeline_multiple_traps():
     # Simulate all interactions
     for trap_type, input_data, ip, _ in interactions:
         manager.run_trap(trap_type, input_data=input_data, ip=ip)
-    # Step 3: Verify all log entries
+    # Verify all log entries
     for trap_type, input_data, ip, log_path in interactions:
         log_content = log_path.read_text()
         assert ip in log_content
@@ -39,9 +39,9 @@ def test_end_to_end_pipeline_multiple_traps():
             assert str(input_data["port"]) in log_content
         else:
             assert str(input_data).split()[0] in log_content
-    # Step 4: Generate report (aggregates all logs)
+    # Generate report 
     generate_report()
-    # Step 5: Assert all interactions in report
+    # Assert all interactions in report
     report_content = REPORT_PATH.read_text(encoding="utf-8")
     for trap_type, input_data, ip, log_path in interactions:
         assert ip in report_content
@@ -51,5 +51,5 @@ def test_end_to_end_pipeline_multiple_traps():
         else:
             assert str(input_data).split()[0] in report_content
             assert trap_type in report_content
-    # Optionally, check for table structure
+   
     assert "<table" in report_content and "<th>Timestamp</th>" in report_content

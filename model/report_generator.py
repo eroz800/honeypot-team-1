@@ -16,7 +16,7 @@ def _fetch_events():
                 line = line.strip()
                 if not line:
                     continue
-                # Try JSON
+                # JSON
                 try:
                     obj = json.loads(line)
                     event = {
@@ -29,7 +29,7 @@ def _fetch_events():
                     continue
                 except Exception:
                     pass
-                # Try CSV
+                # CSV
                 try:
                     if line.count(",") >= 3:
                         reader = csv.reader([line])

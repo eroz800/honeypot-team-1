@@ -1,4 +1,4 @@
-# FILE: controller/api_controller.py
+
 from flask import (
     Flask, request, jsonify, send_from_directory,
     render_template_string, send_file, Response
@@ -6,11 +6,11 @@ from flask import (
 from pathlib import Path
 import sys, os, json, urllib.request
 
-# --- הגדרות בסיס ---
+# הגדרות בסיס 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-# --- יבוא טראפים ומנג'ר ---
+# יבוא טראפים ומנג'ר 
 from model.trap_manager import TrapManager
 from model.open_ports_trap import OpenPortsTrap
 from model.ransomware_trap import RansomwareTrap
@@ -26,13 +26,13 @@ try:
 except Exception:
     log_interaction = None
 
-# ⬅️ משתמשים במחולל הדוחות החדש (CSV/PDF + events)
+# CSV/PDF + events
 from model import report_generator
 
-# --- Flask app ---
+# Flask app 
 app = Flask(__name__)
 
-# --- CORS (גם אם Flask-Cors לא מותקן) ---
+# CORS 
 try:
     from flask_cors import CORS
     CORS(app)
@@ -44,7 +44,7 @@ except Exception:
         resp.headers.setdefault("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         return resp
 
-# --- Manager + רישום טראפים ---
+# Manager + רישום טראפים 
 manager = TrapManager()
 manager.add_trap("open_ports", OpenPortsTrap())
 manager.add_trap("ransomware", RansomwareTrap())
@@ -55,23 +55,23 @@ manager.add_trap("ftp", FTPTrap())
 manager.add_trap("admin_panel", AdminPanelTrap())
 manager.add_trap("iot_router", IoTRouterTrap())
 
-# ---------- Health ----------
+# Health 
 @app.route("/health", methods=["GET"])
 def health():
     return {"status": "running"}, 200
 
-# ---------- Routes בסיס ----------
+# Routes בסיס 
 @app.route("/")
 def home():
     return "Honeypot is live"
 
-# ---------- Dashboard / Static ----------
+# Dashboard / Static 
 @app.route("/dashboard")
 def dashboard():
     with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
         return render_template_string(f.read())
 
-# ---------------- Reports & Data Export (CSV / PDF / HTML) ----------------
+# Reports & Data Export (CSV / PDF / HTML)
 @app.route("/report")
 def report_html():
     """מציג את דוח האירועים בעמוד HTML שמוגדר ב-reports/summary.html"""
@@ -121,7 +121,7 @@ def report_pdf():
 def style():
     return send_from_directory(str(BASE_DIR / "view"), "style.css")
 
-# ---------- Views (UI) ----------
+# Views (UI)
 @app.route("/admin_panel.html")
 def admin_panel():
     return send_from_directory(str(BASE_DIR / "view"), "admin_panel.html")
@@ -134,7 +134,7 @@ def phishing():
 def router_ui():
     return send_from_directory(str(BASE_DIR / "view"), "router_ui.html")
 
-# ---------- Traps (API) ----------
+# Traps (API) 
 @app.route("/trap/phishing", methods=["POST"])
 def trap_phishing():
     trap = manager.get_trap("phishing")
@@ -167,7 +167,7 @@ def trap_iot_router():
     return jsonify({"status": "ok", "data": response_data})
 
 
-# --- helpers: נרמול שמות טראפים / כינויים ---
+# helpers: נרמול שמות טראפים / כינויים 
 _TRAP_ALIASES = {
     "http": "http", "https": "http", "web": "http",
     "ftp": "ftp", "ssh": "ssh", "phishing": "phishing",
@@ -180,7 +180,7 @@ def _normalize_trap_name(name: str) -> str:
     s = s.replace("-", "_").replace(" ", "_")
     return _TRAP_ALIASES.get(s, s)
 
-# ---------- Generic simulation endpoint ----------
+# Generic simulation endpoint 
 @app.route("/simulate", methods=["POST"])
 def simulate():
     data = request.get_json(silent=True) or {}
@@ -217,7 +217,7 @@ def simulate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ---------- GeoIP (שלב 8) ----------
+# GeoIP 
 @app.route("/geoip", methods=["GET"])
 def geoip():
     ip = (request.args.get("ip") or "").strip()
@@ -241,7 +241,7 @@ def geoip():
     except Exception as e:
         return jsonify({"error": str(e)}), 502
 
-# ---------------- Reports Export ----------------
+# Reports Export
 @app.route("/reports.csv", methods=["GET"])
 def export_csv():
     from flask import Response
@@ -254,7 +254,7 @@ def export_csv():
     # כותרות
     writer.writerow(["Timestamp", "Trap", "IP", "Input"])
 
-    # דוגמא לנתונים – מחליפים לפי הדאטה האמיתית שלכם
+   
     sample_data = [
         ("2025-09-01T12:00:00Z", "http", "1.2.3.4", "GET /"),
         ("2025-09-01T12:05:00Z", "ftp", "5.6.7.8", "USER test"),
@@ -294,5 +294,5 @@ def export_pdf():
         headers={"Content-Disposition": "attachment; filename=reports.pdf"},
     )
 if __name__ == "__main__":
-    # מאזין החוצה (גם בתוך Docker) על 0.0.0.0:5000
+
     app.run(host="0.0.0.0", port=5000, debug=True)

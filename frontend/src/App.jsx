@@ -1,4 +1,4 @@
-// src/App.jsx — Ultra Theme + Motion
+
 import { useEffect, useMemo, useState, useRef } from "react";
 import "./App.css";
 import {
@@ -10,31 +10,31 @@ import { motion } from "framer-motion";
 export default function App() {
   const API = import.meta.env.VITE_API_BASE_URL;
 
-  // --- בסיס ---
+  // בסיס 
   const [status, setStatus] = useState(null);
   const [events, setEvents] = useState([]); // [time, trap, ip, input]
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // --- חיפוש/סינון/מיון ---
+  // חיפוש/סינון/מיון 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedTrap, setSelectedTrap] = useState("all");
   const [sortDir, setSortDir] = useState("desc");
 
-  // --- סימולטור ---
+  //סימולטור 
   const [simTrap, setSimTrap] = useState("");
   const [simInput, setSimInput] = useState("");
   const [simIP, setSimIP] = useState("");
   const [simLoading, setSimLoading] = useState(false);
   const [simMsg, setSimMsg] = useState("");
 
-  // --- GeoIP ---
+  // GeoIP 
   const [geoFlag, setGeoFlag] = useState(false);
   const [geoRows, setGeoRows] = useState([]);
 
-  // --- שלב 10: Pagination ---
+  // Pagination 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10); // 10/20/50
 
@@ -51,14 +51,14 @@ export default function App() {
       const data = await res.json();
       setStatus(data?.status || "unknown");
     } catch {
-      setStatus("❌ Error");
+      setStatus("Error");
     }
   }
 
-  // --- שלב 10: AbortController לדוח ---
+  // AbortController
   const reportAbortRef = useRef(null);
 
-  // Report load (עם ביטול בקשות קודמות)
+  // Report load 
   async function loadReport() {
     if (reportAbortRef.current) {
       try { reportAbortRef.current.abort(); } catch {}
@@ -91,7 +91,7 @@ export default function App() {
       setLastUpdated(new Date());
     } catch (e) {
       if (e?.name !== "AbortError") {
-        setError("❌ לא ניתן לטעון את הדוח (ננסה שוב).");
+        setError(" לא ניתן לטעון את הדוח (ננסה שוב).");
         setEvents([]);
       }
     } finally {
@@ -114,16 +114,15 @@ export default function App() {
     setPage(1);
   }, [selectedTrap, debouncedQuery, sortDir]);
 
-  // === הוספה: נירמול שמות טראפים (מסיר אמוג׳י/רווחים וממיר ל-snake_case) ===
+  // נירמול שמות טראפים
   const normalizeTrapLabel = (t = "") =>
     String(t)
       .toLowerCase()
-      // מסיר אמוג'י/תווים גרפיים בתחילת המחרוזת
       .replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]*/u, "")
       .trim()
       .replace(/\s+/g, "_");
 
-  // === הוספה: מיפוי norm -> label המקורי (כדי להציג ב־UI את הטקסט עם האימוג׳י) ===
+  
   const trapDisplay = useMemo(() => {
     const map = new Map();
     for (const r of events) {
@@ -134,7 +133,7 @@ export default function App() {
     return map;
   }, [events]);
 
-  // Options (דינמי מהדו"ח, לפי נירמול)
+  // Options 
   const trapOptions = useMemo(() => {
     const set = new Set(
       events.map(r => normalizeTrapLabel(r[1] || "")).filter(Boolean)
@@ -153,7 +152,6 @@ export default function App() {
   const filteredEvents = useMemo(() => {
     let data = [...events];
     if (selectedTrap !== "all") {
-      // השוואה לפי נירמול כדי ש״🛡️ open_ports״ ייחשב כ-open_ports
       data = data.filter(row => normalizeTrapLabel(row[1] || "") === selectedTrap);
     }
     if (debouncedQuery) {
@@ -166,7 +164,7 @@ export default function App() {
     return data;
   }, [events, selectedTrap, debouncedQuery, sortDir]);
 
-  // --- שלב 10: נגזרות עימוד ---
+  
   const totalItems = filteredEvents.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const pagedEvents = useMemo(() => {
@@ -185,7 +183,7 @@ export default function App() {
       labels.add(norm);
       counts[norm] = (counts[norm] || 0) + 1;
     }
-    // מציגים ב־XAxis את הלייבל המקורי (עם האימוג׳י) אם קיים
+    
     return Array.from(labels)
       .map(norm => ({ trap: trapDisplay.get(norm) || norm, count: counts[norm] || 0 }))
       .sort((a, b) => b.count - a.count);
@@ -207,7 +205,7 @@ export default function App() {
       .sort((a, b) => (a.time < b.time ? -1 : 1));
   }, [filteredEvents]);
 
-  // מנקה שם trap מהאימוג'ים/רווחים/תווים לא-אלפביתיים
+  
   function normalizeTrap(t = "") {
     return String(t)
       .toLowerCase()
@@ -217,7 +215,7 @@ export default function App() {
       .replace(/^_+|_+$/g, "");
   }
 
-  // Simulation (עם normalizeTrap + input כאובייקט)
+  // Simulation 
   async function submitSimulation(e) {
     e.preventDefault();
     setSimMsg("");
@@ -245,7 +243,7 @@ export default function App() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
-      setSimMsg("✅ Simulation sent successfully");
+      setSimMsg(" Simulation sent successfully");
       loadReport(); // רענון מיידי
     } catch (err) {
       setSimMsg(`❌ ${err.message}`);
@@ -293,7 +291,7 @@ export default function App() {
   const uniqueTraps = new Set(filteredEvents.map(r => r[1]).filter(Boolean)).size;
   const lastSeenTs = filteredEvents[0]?.[0] || null;
 
-  // עזר לשיוך צבע לתגית
+  
   const trapClass = (t="") => {
     const k = (t || "").toLowerCase().replace(/\s+/g,'_');
     return ["ftp","ssh","http","ransomware","open_ports","admin_panel","iot_router"].includes(k) ? k : "";
@@ -545,7 +543,7 @@ export default function App() {
                 </tbody>
               </table>
 
-              {/* --- שלב 10: פקדי עימוד --- */}
+              
               <div
                 className="pager"
                 style={{

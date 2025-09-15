@@ -1,4 +1,4 @@
-# FILE: model/iot_router_trap.py
+
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, UTC
@@ -17,10 +17,10 @@ class IoTRouterTrap(Trap):
     """
 
     def get_protocol(self) -> str:
-        return "HTTP"   # לפי הדרישות
+        return "HTTP"  
 
     def get_type(self) -> str:
-        # לפי הטסט – חייב להיות בדיוק "IoT Router"
+        
         return "IoT Router"
 
     def simulate_interaction(self, input_data, ip: str):
@@ -31,14 +31,14 @@ class IoTRouterTrap(Trap):
         password = input_data.get("password", "")
         dns = input_data.get("dns", "")
 
-        # משמרים גם את השדות המקוריים וגם מוסיפים username לנוחות
+        
         if ssid:
             input_data["username"] = ssid
 
         # כתיבת לוג
         self._append_log_line(self._format_log(ip, input_data))
 
-        # מחזירים תשובה עם אותם מפתחות כדי שהטסט יעבור
+    
         return {
             "trap_type": self.get_type(),
             "protocol": self.get_protocol(),
@@ -53,10 +53,10 @@ class IoTRouterTrap(Trap):
             }
         }
 
-    # --- עזרי לוג ---
+    
     def _format_log(self, ip: str, input_data: Dict) -> str:
         ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
-        # שים לב: כאן חייב להיות "IoT Router" ולא "iot_router"
+        
         return f'{ts}, IoT Router, {ip}, {input_data}\n'
 
     def _append_log_line(self, line: str) -> None:

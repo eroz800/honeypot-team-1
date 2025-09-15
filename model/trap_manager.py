@@ -36,7 +36,7 @@ class TrapManager:
 
         res = trap.simulate_interaction(input_data, ip)
 
-        # אם המלכודת כבר החזירה מעטפת מלאה – מחזירים כמו שזה
+        
         if isinstance(res, dict) and {"trap_type", "protocol", "timestamp"}.issubset(res.keys()):
             return res
 

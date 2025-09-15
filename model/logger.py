@@ -1,5 +1,4 @@
 
-# model/logger.py
 from __future__ import annotations
 import os
 import json
@@ -7,11 +6,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-# בסיס הפרויקט (תיקייה אחת מעל model/)
+
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-# מאפשרים לשנות מיקום לוגים עם משתנה סביבה HONEY_LOG_DIR
-# אם לא מוגדר -> כותבים לתיקיית ./logs בתוך הפרויקט
+
 LOG_DIR = Path(os.getenv("HONEY_LOG_DIR", str(BASE_DIR / "logs")))
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -36,7 +34,7 @@ def log_interaction(trap_type: str, ip: Optional[str], input_data: Any) -> None:
     רושם שורת לוג בפורמט CSV:
     <UTC ISO timestamp>, <trap_type>, <ip>, <input_json>
     """
-    # זמן UTC בפורמט ISO 8601 עם Z בסוף (נוח לדוחות/השוואות בין שרתים)
+    
     timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     safe_ip = ip or "unknown"
@@ -44,11 +42,11 @@ def log_interaction(trap_type: str, ip: Optional[str], input_data: Any) -> None:
 
     log_line = f"{timestamp}, {trap_type}, {safe_ip}, {input_str}\n"
 
-    # כתיבה בקידוד UTF-8 (יוצר את הקובץ אם לא קיים)
+    
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(log_line)
 
-    # הדפסה לקונסול בזמן פיתוח/בדיקות (לא חובה לפרודקשן)
+    
     print(log_line.strip())
 
 
