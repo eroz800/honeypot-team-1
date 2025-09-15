@@ -20,3 +20,7 @@
 [AdminPanelTrap] 2025-09-11T13:26:23.955289 | IP: 7.7.7.7 | User:  | Success: False
 [AdminPanelTrap] 2025-09-11T13:26:54.959626 | IP: 7.7.7.7 | User:  | Success: False
 [AdminPanelTrap] 2025-09-11T13:46:09.668485 | IP: 7.7.7.7 | User:  | Success: False
+[AdminPanelTrap] 2025-09-15T10:13:57.713765 | IP: 172.18.0.1 | User: test | Success: False
+[AdminPanelTrap] 2025-09-15T10:15:09.957022 | IP: 172.18.0.1 | User: giladtets | Success: False
+[AdminPanelTrap] 2025-09-15T10:15:10.896094 | IP: 172.18.0.1 | User: giladtets | Success: False
+[AdminPanelTrap] 2025-09-15T10:15:11.049878 | IP: 172.18.0.1 | User: giladtets | Success: False
