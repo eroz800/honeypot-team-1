@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Honeypot Dashboard</title>
+    <link rel="stylesheet" href="/static/App.css">
+    <style>
+      body {
+        margin:0; 
+        color:var(--text, #e6edf3); 
+        background: radial-gradient(1200px 800px at 10% -15%, #0b1e5a 0%, transparent 55%),
+                    radial-gradient(1100px 600px at 100% 0%, #071a36 0%, transparent 45%),
+                    linear-gradient(180deg, var(--bg, #0b1220) 0%, var(--bg2, #101a36) 100%);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        min-height: 100vh;
+        background-size: cover;
+         background-repeat: no-repeat;
+        }
+      .bgs{
+        position: fixed; inset: -20% -10% auto -10%; pointer-events:none; z-index:-1;
+      }
+      .login-container {
+        max-width: 400px;
+        margin: 80px auto;
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        padding: 32px 28px 24px 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .login-title {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 18px;
+        color: var(--primary);
+        text-shadow: 0 0 20px var(--primary);
+      }
+      .login-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .login-form input {
+        font-size: 1rem;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--glass-strong);
+        color: var(--text);
+        outline: none;
+        box-shadow: 0 1px 8px rgba(59,130,246,.08);
+        transition: box-shadow .2s;
+      }
+      .login-form input:focus {
+        box-shadow: 0 0 0 3px var(--primary-600);
+      }
+      .login-btn {
+        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%);
+        color: #fff;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        cursor: pointer;
+        box-shadow: var(--glow);
+        transition: filter .15s, box-shadow .2s;
+      }
+      .login-btn:hover {
+        filter: brightness(1.08);
+      }
+      .login-error {
+        color: var(--danger);
+        font-size: 1rem;
+        margin-top: 10px;
+        text-align: center;
+        min-height: 24px;
+      }
+    </style>
+</head>
+<body>
+    <div class="bgs"></div>
+    <div class="login-container">
+        <div class="login-title">Login</div>
+        <form class="login-form" id="loginForm">
+            <input type="text" name="username" placeholder="Username" required autocomplete="username" />
+            <input type="password" name="password" placeholder="Password" required autocomplete="current-password" />
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div id="error" class="login-error"></div>
+    </div>
+    <script>
+        document.getElementById("loginForm").onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const res = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: form.username.value,
+                    password: form.password.value
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = "/dashboard";
+            } else {
+                document.getElementById("error").innerText = data.error || "Login failed";
+            }
+        };
+    </script>
+</body>
+</html>
