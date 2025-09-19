@@ -118,7 +118,7 @@ export default function App() {
   const normalizeTrapLabel = (t = "") =>
     String(t)
       .toLowerCase()
-      .replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]*/u, "")
+      .replace(/^[^\w\s]+/u, "").replace(/^\s+/u, "")
       .trim()
       .replace(/\s+/g, "_");
 

@@ -1,10 +1,16 @@
 
 from flask import (
     Flask, request, jsonify, send_from_directory,
-    render_template_string, send_file, Response
+    render_template_string, send_file, Response, session, redirect
 )
 from pathlib import Path
 import sys, os, json, urllib.request
+from werkzeug.security import generate_password_hash, check_password_hash
+
+USERS = {
+    "admin": generate_password_hash("123456"),
+    "administrator": generate_password_hash("123456")
+}
 
 # הגדרות בסיס 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -31,7 +37,7 @@ from model import report_generator
 
 # Flask app 
 app = Flask(__name__)
-
+app.secret_key = "123456"
 # CORS 
 try:
     from flask_cors import CORS
@@ -60,6 +66,37 @@ manager.add_trap("iot_router", IoTRouterTrap())
 def health():
     return {"status": "running"}, 200
 
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "")
+    password = data.get("password", "")
+    if username in USERS and check_password_hash(USERS[username], password):
+        session["user"] = username
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"success": False, "error": "Invalid credentials"}), 401
+    
+@app.route("/login.html")
+def login_page():
+    return send_from_directory(str(BASE_DIR / "frontend"), "login.html")  
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    session.pop("user", None)
+    return jsonify({"success": True})
+
+@app.route('/assets/<path:filename>')
+def assets(filename):
+    return send_from_directory(str(BASE_DIR / "frontend/dist/assets"), filename)
+
+@app.route("/api/auth-check", methods=["GET"])
+def auth_check():
+    if session.get("user"):
+        return jsonify({"authenticated": True, "user": session["user"]})
+    else:
+        return jsonify({"authenticated": False}), 401
+
 # Routes בסיס 
 @app.route("/")
 def home():
@@ -68,8 +105,9 @@ def home():
 # Dashboard / Static 
 @app.route("/dashboard")
 def dashboard():
-    with open(BASE_DIR / "view" / "dashboard.html", "r", encoding="utf-8") as f:
-        return render_template_string(f.read())
+    if not session.get("user"):
+        return redirect("/login.html")
+    return send_from_directory(str(BASE_DIR / "frontend/dist"), "index.html")
 
 # Reports & Data Export (CSV / PDF / HTML)
 @app.route("/report")
