@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 .venv/
+venv/certs/
 # VS Code settings
 .vscode/
 # OS files

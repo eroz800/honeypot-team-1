@@ -331,6 +331,12 @@ def export_pdf():
         mimetype="application/pdf",
         headers={"Content-Disposition": "attachment; filename=reports.pdf"},
     )
+@app.route("/report/raw")
+def report_html_raw():
+    html_path = BASE_DIR / "reports" / "summary.html"
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+    
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=5000, debug=True)
